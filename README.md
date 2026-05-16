@@ -1,0 +1,2 @@
+# InfernumFrontend
+Frontend of Infernum
