@@ -1,0 +1,53 @@
+<div class="auth-container">
+    <div class="modal-static">
+        <section class="modal__body">
+            <div class="body__backdrop">
+                <div class="backdrop">
+                    <div class="version">v001.infernum</div>
+                    <div class="corner"></div>
+                </div>
+            </div>
+            <div class="body__content">
+                <h2>
+                    <app-glitch-text text="Infernum - Sign In"></app-glitch-text>
+                </h2>
+                <div class="body__text">
+                    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" formControlName="email" class="cyber-input"
+                                [class.error]="email?.invalid && email?.touched" placeholder="tu@email.com">
+                            <div class="error-message" *ngIf="email?.invalid && email?.touched">
+                                <span *ngIf="email?.errors?.['required']">Email is required</span>
+                                <span *ngIf="email?.errors?.['email']">Invalid email</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" formControlName="password" class="cyber-input"
+                                [class.error]="password?.invalid && password?.touched" placeholder="••••••••">
+                            <div class="error-message" *ngIf="password?.invalid && password?.touched">
+                                <span *ngIf="password?.errors?.['required']">Password is required</span>
+                                <span *ngIf="password?.errors?.['minlength']">Minimum 6 characters</span>
+                            </div>
+                        </div>
+
+                        <div class="error-message global" *ngIf="errorMessage">
+                            {{ errorMessage }}
+                        </div>
+
+                        <div class="modal__actions">
+                            <app-cyber-button label="Register" kbd="R" type="button"
+                                (clicked)="router.navigate(['/register'])">
+                            </app-cyber-button>
+
+                            <app-cyber-button label="Sign In" kbd="↵" type="submit" [disabled]="isLoading">
+                            </app-cyber-button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

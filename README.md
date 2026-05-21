@@ -1,2 +1,2 @@
 # InfernumFrontend
-Frontend of Infernum
+Frontend for infernum

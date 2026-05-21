@@ -1,0 +1,13 @@
+FROM node:22-slim AS base
+
+WORKDIR /home/ubuntu/frontend-code
+
+COPY Infernum/package*.json ./
+
+RUN npm install
+
+RUN apt-get update && apt-get install -y apache2 && rm -rf /var/lib/apt/lists/*
+
+COPY . .
+
+EXPOSE 80 443

@@ -1,0 +1,180 @@
+<app-navbar></app-navbar>
+
+<div class="store-container">
+
+  <!-- Featured Games Hero -->
+  <section class="hero-featured">
+    <div class="featured-carousel">
+      @for (game of getFeaturedGames(); track game.id) {
+      <div class="featured-game">
+        <div class="featured-backdrop"></div>
+        <div class="featured-content">
+          <h1 class="featured-title">{{ game.title }}</h1>
+          <p class="featured-genre">{{ game.genre }}</p>
+          <div class="featured-price">
+            @if (game.discount) {
+            <span class="discount-badge">-{{ game.discount }}%</span>
+            <span class="original-price">${{ game.price.toFixed(2) }}</span>
+            <span class="final-price">${{ getDiscountedPrice(game).toFixed(2) }}</span>
+            } @else {
+            <span class="final-price">${{ game.price.toFixed(2) }}</span>
+            }
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </section>
+
+  <!-- Special Offers -->
+  <section class="store-section">
+    <h2 class="section-title">
+      <app-glitch-text text="Special Offers"></app-glitch-text>
+    </h2>
+    <div class="games-grid">
+      @for (game of getSpecialOffers(); track game.id) {
+      <div class="game-card">
+        <div class="game-image">
+          <div class="placeholder-image">
+            <span class="game-icon">🎮</span>
+          </div>
+          @if (game.discount) {
+          <div class="discount-tag">-{{ game.discount }}%</div>
+          }
+        </div>
+        <div class="game-info">
+          <h3 class="game-title">{{ game.title }}</h3>
+          <p class="game-genre">{{ game.genre }}</p>
+          <div class="game-price">
+            @if (game.discount) {
+            <span class="price-original">${{ game.price.toFixed(2) }}</span>
+            <span class="price-final">${{ getDiscountedPrice(game).toFixed(2) }}</span>
+            } @else {
+            <span class="price-final">${{ game.price.toFixed(2) }}</span>
+            }
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </section>
+
+  <!-- New Releases -->
+  <section class="store-section">
+    <h2 class="section-title">
+      <app-glitch-text text="New Releases"></app-glitch-text>
+    </h2>
+    <div class="games-grid">
+      @for (game of getNewReleases(); track game.id) {
+      <div class="game-card">
+        <div class="game-image">
+          <div class="placeholder-image">
+            <span class="game-icon">🎮</span>
+          </div>
+          <div class="new-badge">NEW</div>
+        </div>
+        <div class="game-info">
+          <h3 class="game-title">{{ game.title }}</h3>
+          <p class="game-genre">{{ game.genre }}</p>
+          <div class="game-price">
+            @if (game.discount) {
+            <span class="price-original">${{ game.price.toFixed(2) }}</span>
+            <span class="price-final">${{ getDiscountedPrice(game).toFixed(2) }}</span>
+            } @else {
+            <span class="price-final">${{ game.price.toFixed(2) }}</span>
+            }
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </section>
+
+  <!-- Browse by Genre -->
+  <section class="store-section">
+    <h2 class="section-title">
+      <app-glitch-text text="Browse by Genre"></app-glitch-text>
+    </h2>
+    <div class="genres-grid">
+      @for (genre of genres; track genre) {
+      <div class="genre-card">
+        <div class="modal-static">
+          <section class="modal__body">
+            <div class="body__backdrop">
+              <div class="backdrop">
+                <div class="version">v001</div>
+                <div class="corner"></div>
+              </div>
+            </div>
+            <div class="body__content">
+              <h3>{{ genre }}</h3>
+              <p>Explore {{ genre }} games</p>
+            </div>
+          </section>
+        </div>
+      </div>
+      }
+    </div>
+  </section>
+
+  <!-- All Games -->
+  <section class="store-section">
+    <h2 class="section-title">
+      <app-glitch-text text="All Games"></app-glitch-text>
+    </h2>
+    <div class="games-grid">
+      @for (game of games; track game.id) {
+      <div class="game-card">
+        <div class="game-image">
+          <div class="placeholder-image">
+            <span class="game-icon">🎮</span>
+          </div>
+          @if (game.discount) {
+          <div class="discount-tag">-{{ game.discount }}%</div>
+          }
+          @if (game.isNew) {
+          <div class="new-badge">NEW</div>
+          }
+        </div>
+        <div class="game-info">
+          <h3 class="game-title">{{ game.title }}</h3>
+          <p class="game-genre">{{ game.genre }}</p>
+          <div class="game-price">
+            @if (game.discount) {
+            <span class="price-original">${{ game.price.toFixed(2) }}</span>
+            <span class="price-final">${{ getDiscountedPrice(game).toFixed(2) }}</span>
+            } @else {
+            <span class="price-final">${{ game.price.toFixed(2) }}</span>
+            }
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="store-footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>INFERNUM</h4>
+        <p>Your cyberpunk game store</p>
+      </div>
+      <div class="footer-section">
+        <h4>Quick Links</h4>
+        <a>About</a>
+        <a>Support</a>
+        <a>Terms</a>
+      </div>
+      <div class="footer-section">
+        <h4>Account</h4>
+        <a (click)="navigateToLogin()">Login</a>
+        <a (click)="navigateToRegister()">Register</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>INFERNUM © 2026 - Cyberpunk Game Store</p>
+      <p class="version-info">v001.infernum.store</p>
+    </div>
+  </footer>
+</div>

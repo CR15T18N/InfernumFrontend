@@ -1,0 +1,352 @@
+.store-container
+  min-height: 100vh
+  margin-left: 60px
+  padding: 2rem
+  background: #131313
+  color: var(--accent)
+
+// Header
+.store-header
+  max-width: 1400px
+  margin: 0 auto 2rem auto
+  display: flex
+  flex-direction: column
+  gap: 1.5rem
+
+.store-title
+  display: flex
+  align-items: baseline
+  gap: 1.5rem
+
+  h1
+    font-size: 2.5rem
+    text-transform: uppercase
+    margin: 0
+
+.game-count
+  font-size: 0.9rem
+  color: color-mix(in lch, var(--accent), transparent 40%)
+  text-transform: uppercase
+  letter-spacing: 0.05em
+
+// Filters
+.filters
+  display: flex
+  align-items: center
+  gap: 1rem
+  flex-wrap: wrap
+
+.search-wrapper
+  position: relative
+  flex: 1
+  min-width: 220px
+  max-width: 400px
+
+.search-icon
+  position: absolute
+  left: 0.75rem
+  top: 50%
+  transform: translateY(-50%)
+  font-size: 0.9rem
+  pointer-events: none
+
+.search-input
+  width: 100%
+  padding: 0.65rem 0.75rem 0.65rem 2.2rem
+  background: color-mix(in lch, var(--accent), transparent 97%)
+  border: 1px solid color-mix(in lch, var(--accent), transparent 70%)
+  color: var(--accent)
+  font-family: 'Cyber', sans-serif
+  font-size: 0.9rem
+  outline: none
+  transition: border-color 0.2s ease
+
+  &:focus
+    border-color: var(--accent)
+    box-shadow: 0 0 8px color-mix(in lch, var(--accent), transparent 82%)
+
+  &::placeholder
+    color: color-mix(in lch, var(--accent), transparent 60%)
+
+.genre-select
+  padding: 0.65rem 1rem
+  background: color-mix(in lch, var(--accent), transparent 97%)
+  border: 1px solid color-mix(in lch, var(--accent), transparent 70%)
+  color: var(--accent)
+  font-family: 'Cyber', sans-serif
+  font-size: 0.9rem
+  cursor: pointer
+  outline: none
+  transition: border-color 0.2s ease
+
+  &:focus
+    border-color: var(--accent)
+
+  option
+    background: #131313
+
+.clear-btn
+  padding: 0.65rem 1rem
+  background: none
+  border: 1px solid color-mix(in lch, var(--shadow), transparent 60%)
+  color: color-mix(in lch, var(--shadow), transparent 20%)
+  font-family: 'Cyber', sans-serif
+  font-size: 0.85rem
+  cursor: pointer
+  transition: all 0.2s ease
+
+  &:hover
+    background: color-mix(in lch, var(--shadow), transparent 90%)
+    border-color: var(--shadow)
+
+// Loading
+.store-loading
+  display: flex
+  align-items: center
+  justify-content: center
+  gap: 1rem
+  min-height: 40vh
+  color: color-mix(in lch, var(--accent), transparent 40%)
+
+.loading-spinner
+  width: 36px
+  height: 36px
+  border: 3px solid color-mix(in lch, var(--accent), transparent 80%)
+  border-top-color: var(--accent)
+  border-radius: 50%
+  animation: spin 0.8s linear infinite
+  flex-shrink: 0
+
+@keyframes spin
+  to
+    transform: rotate(360deg)
+
+// Empty state
+.store-empty
+  display: flex
+  flex-direction: column
+  align-items: center
+  gap: 1rem
+  min-height: 40vh
+  justify-content: center
+  color: color-mix(in lch, var(--accent), transparent 40%)
+  font-size: 1rem
+
+.empty-icon
+  font-size: 3rem
+
+// Game grid
+.games-grid
+  max-width: 1400px
+  margin: 0 auto
+  display: grid
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr))
+  gap: 1.5rem
+
+// Game card
+.game-card
+  display: flex
+  flex-direction: column
+  background: color-mix(in lch, var(--accent), transparent 97%)
+  border: 1px solid color-mix(in lch, var(--accent), transparent 80%)
+  text-decoration: none
+  color: inherit
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease
+  cursor: pointer
+
+  &:hover
+    transform: translateY(-6px)
+    border-color: color-mix(in lch, var(--accent), transparent 40%)
+    box-shadow: 0 8px 24px color-mix(in lch, var(--accent), transparent 75%)
+
+    .card-overlay
+      opacity: 1
+
+    .card-cover
+      transform: scale(1.04)
+
+.card-cover-wrapper
+  position: relative
+  overflow: hidden
+  aspect-ratio: 2 / 3
+
+.card-cover
+  width: 100%
+  height: 100%
+  object-fit: cover
+  display: block
+  transition: transform 0.3s ease
+
+.card-overlay
+  position: absolute
+  inset: 0
+  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 55%)
+  display: flex
+  align-items: flex-end
+  justify-content: center
+  padding-bottom: 1rem
+  opacity: 0
+  transition: opacity 0.25s ease
+
+.view-label
+  font-size: 0.8rem
+  color: var(--accent)
+  text-transform: uppercase
+  letter-spacing: 0.1em
+  text-shadow: 0 0 8px var(--accent)
+
+.card-body
+  padding: 0.85rem
+  display: flex
+  flex-direction: column
+  gap: 0.25rem
+  flex: 1
+
+.card-genre
+  font-size: 0.65rem
+  color: var(--accent)
+  text-transform: uppercase
+  letter-spacing: 0.1em
+  opacity: 0.6
+
+.card-title
+  font-size: 0.95rem
+  font-weight: bold
+  color: var(--accent)
+  white-space: nowrap
+  overflow: hidden
+  text-overflow: ellipsis
+
+.card-developer
+  font-size: 0.75rem
+  color: color-mix(in lch, var(--accent), transparent 40%)
+
+.card-footer
+  display: flex
+  justify-content: space-between
+  align-items: center
+  margin-top: 0.5rem
+  padding-top: 0.5rem
+  border-top: 1px solid color-mix(in lch, var(--accent), transparent 85%)
+
+.card-year
+  font-size: 0.7rem
+  color: color-mix(in lch, var(--accent), transparent 55%)
+
+.card-price
+  font-size: 0.9rem
+  font-weight: bold
+  color: var(--accent)
+  text-shadow: 0 0 6px color-mix(in lch, var(--accent), transparent 60%)
+
+  &.discounted
+    color: #a4d007
+    text-shadow: 0 0 6px rgba(164, 208, 7, 0.4)
+
+.card-price-block
+  display: flex
+  flex-direction: column
+  align-items: flex-end
+  gap: 0.1rem
+
+.price-original
+  font-size: 0.72rem
+  text-decoration: line-through
+  color: color-mix(in lch, var(--accent), transparent 55%)
+  line-height: 1
+
+.discount-badge
+  position: absolute
+  top: 8px
+  left: 8px
+  background: #4c6b22
+  color: #a4d007
+  font-weight: 800
+  font-size: 0.8rem
+  padding: 0.2rem 0.5rem
+  letter-spacing: 0.05em
+  border-radius: 2px
+  z-index: 2
+
+// Responsive
+@media (max-width: 900px)
+  .games-grid
+    grid-template-columns: repeat(auto-fill, minmax(165px, 1fr))
+
+@media (max-width: 600px)
+  .store-container
+    padding: 1rem
+
+  .games-grid
+    grid-template-columns: repeat(2, 1fr)
+    gap: 0.75rem
+
+  .store-title h1
+    font-size: 1.8rem
+
+  .filters
+    flex-direction: column
+    align-items: stretch
+
+  .search-wrapper
+    max-width: 100%
+
+// Pagination
+.pagination-controls
+  max-width: 1400px
+  margin: 3rem auto 2rem
+  display: flex
+  align-items: center
+  justify-content: center
+  gap: 2rem
+  padding-top: 2rem
+  border-top: 1px solid color-mix(in lch, var(--accent), transparent 90%)
+
+.page-numbers
+  display: flex
+  gap: 0.5rem
+
+.page-num
+  width: 40px
+  height: 40px
+  display: flex
+  align-items: center
+  justify-content: center
+  background: color-mix(in lch, var(--accent), transparent 97%)
+  border: 1px solid color-mix(in lch, var(--accent), transparent 80%)
+  color: var(--accent)
+  font-family: 'Cyber', sans-serif
+  font-size: 0.9rem
+  cursor: pointer
+  transition: all 0.2s ease
+
+  &:hover
+    background: color-mix(in lch, var(--accent), transparent 90%)
+    border-color: var(--accent)
+
+  &.active
+    background: var(--accent)
+    color: #131313
+    box-shadow: 0 0 10px var(--accent)
+    border-color: var(--accent)
+
+.pager-btn
+  padding: 0.6rem 1.2rem
+  background: none
+  border: 1px solid var(--accent)
+  color: var(--accent)
+  font-family: 'Cyber', sans-serif
+  text-transform: uppercase
+  font-size: 0.8rem
+  letter-spacing: 0.1em
+  cursor: pointer
+  transition: all 0.2s ease
+
+  &:hover:not(:disabled)
+    background: color-mix(in lch, var(--accent), transparent 90%)
+    box-shadow: 0 0 10px color-mix(in lch, var(--accent), transparent 80%)
+
+  &:disabled
+    opacity: 0.3
+    cursor: not-allowed
+    border-color: color-mix(in lch, var(--accent), transparent 70%)

@@ -1,0 +1,14 @@
+services:
+  angular:
+    container_name: Angular
+    build:
+      context: ..
+      dockerfile: setup/Dockerfile.prod
+      target: production
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/etc/letsencrypt/live/infernum-original.duckdns.org/fullchain.pem:/usr/local/apache2/conf/certs/fullchain.pem:ro"
+      - "/etc/letsencrypt/live/infernum-original.duckdns.org/privkey.pem:/usr/local/apache2/conf/certs/privkey.pem:ro"
+    restart: unless-stopped

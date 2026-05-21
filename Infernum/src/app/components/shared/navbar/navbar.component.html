@@ -1,0 +1,61 @@
+<nav class="cyber-nav" [class.expanded]="isExpanded()">
+    <div class="nav-header">
+        <button class="logo-btn" (click)="toggleMenu()" aria-label="INFERNUM">
+            <app-glitch-text text="INFERNUM" class="logo-glitch"></app-glitch-text>
+        </button>
+    </div>
+
+    <ul class="nav-links">
+
+        <!-- Always visible -->
+        <li>
+            <a routerLink="/store" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+                class="cyber-link">
+                <span class="icon">◈</span>
+                <app-glitch-text text="Store" class="label"></app-glitch-text>
+            </a>
+        </li>
+
+        <!-- Only when logged in -->
+        <ng-container *ngIf="isLoggedIn">
+            <li>
+                <a routerLink="/home" routerLinkActive="active" class="cyber-link">
+                    <span class="icon">⌂</span>
+                    <app-glitch-text text="Home" class="label"></app-glitch-text>
+                </a>
+            </li>
+            <li>
+                <a routerLink="/profile" routerLinkActive="active" class="cyber-link">
+                    <span class="icon">◉</span>
+                    <app-glitch-text text="Perfil" class="label"></app-glitch-text>
+                </a>
+            </li>
+        </ng-container>
+
+        <!-- Only when NOT logged in -->
+        <ng-container *ngIf="!isLoggedIn">
+            <li>
+                <a routerLink="/login" routerLinkActive="active" class="cyber-link">
+                    <span class="icon">▷</span>
+                    <app-glitch-text text="Login" class="label"></app-glitch-text>
+                </a>
+            </li>
+            <li>
+                <a routerLink="/register" routerLinkActive="active" class="cyber-link">
+                    <span class="icon">⊞</span>
+                    <app-glitch-text text="Registro" class="label"></app-glitch-text>
+                </a>
+            </li>
+        </ng-container>
+
+    </ul>
+
+    <!-- Sign Out button at the bottom (only when logged in) -->
+    <div class="nav-footer">
+        <button *ngIf="isLoggedIn" class="signout-btn" (click)="logout()">
+            <span class="icon">⊘</span>
+            <app-glitch-text text="Sign Out" class="label"></app-glitch-text>
+        </button>
+        <div class="status-indicator" *ngIf="isLoggedIn"></div>
+    </div>
+</nav>

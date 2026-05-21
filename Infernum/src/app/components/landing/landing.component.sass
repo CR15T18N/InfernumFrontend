@@ -1,0 +1,287 @@
+.store-container
+  min-height: 100vh
+  display: flex
+  flex-direction: column
+  position: relative
+  margin-left: 60px // Space for sidebar navbar
+
+// Featured Hero Section
+.hero-featured
+  position: relative
+  min-height: 500px
+  overflow: hidden
+  margin-bottom: 3rem
+
+.featured-carousel
+  display: flex
+  gap: 2rem
+  padding: 2rem
+
+.featured-game
+  position: relative
+  min-width: 100%
+  height: 450px
+  border-radius: 8px
+  overflow: hidden
+  clip-path: var(--clip)
+
+.featured-backdrop
+  position: absolute
+  inset: 0
+  background: linear-gradient(135deg, color-mix(in lch, var(--accent), transparent 60%) 0%, color-mix(in lch, var(--shadow), transparent 60%) 100%)
+  opacity: 0.3
+
+.featured-content
+  position: relative
+  z-index: 2
+  padding: 3rem
+  height: 100%
+  display: flex
+  flex-direction: column
+  justify-content: flex-end
+  background: linear-gradient(to top, rgba(19, 19, 19, 0.95) 0%, transparent 100%)
+
+.featured-title
+  font-size: clamp(2rem, 5vw, 4rem)
+  margin: 0 0 0.5rem 0
+  text-transform: uppercase
+  text-shadow: 0 0 20px var(--accent)
+
+.featured-genre
+  font-size: 1.2rem
+  color: var(--accent)
+  margin: 0 0 1.5rem 0
+  opacity: 0.8
+
+.featured-price
+  display: flex
+  align-items: center
+  gap: 1rem
+  font-size: 1.5rem
+
+// Store Sections
+.store-section
+  padding: 3rem 2rem
+  max-width: 1400px
+  margin: 0 auto
+  width: 100%
+
+.section-title
+  font-size: clamp(1.5rem, 3vw, 2.5rem)
+  margin: 0 0 2rem 0
+  text-transform: uppercase
+  letter-spacing: 0.1em
+
+// Games Grid
+.games-grid
+  display: grid
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr))
+  gap: 1.5rem
+
+.game-card
+  background: color-mix(in lch, var(--accent), transparent 95%)
+  border: var(--border) solid color-mix(in lch, var(--accent), transparent 80%)
+  border-radius: 4px
+  overflow: hidden
+  cursor: pointer
+  transition: all 0.3s ease
+  clip-path: var(--clip)
+
+  &:hover
+    transform: translateY(-8px)
+    border-color: var(--accent)
+    box-shadow: 0 10px 30px color-mix(in lch, var(--accent), transparent 70%)
+
+    .placeholder-image
+      background: color-mix(in lch, var(--accent), transparent 80%)
+
+.game-image
+  position: relative
+  width: 100%
+  aspect-ratio: 16 / 9
+  overflow: hidden
+
+.placeholder-image
+  width: 100%
+  height: 100%
+  background: color-mix(in lch, var(--accent), transparent 90%)
+  display: flex
+  align-items: center
+  justify-content: center
+  transition: all 0.3s ease
+
+.game-icon
+  font-size: 3rem
+  opacity: 0.5
+
+.discount-tag
+  position: absolute
+  top: 10px
+  left: 10px
+  background: var(--shadow)
+  color: white
+  padding: 0.3rem 0.6rem
+  font-weight: bold
+  font-size: 0.9rem
+  border-radius: 2px
+
+.new-badge
+  position: absolute
+  top: 10px
+  right: 10px
+  background: var(--accent)
+  color: #131313
+  padding: 0.3rem 0.6rem
+  font-weight: bold
+  font-size: 0.8rem
+  border-radius: 2px
+
+.game-info
+  padding: 1rem
+
+.game-title
+  font-size: 1.1rem
+  margin: 0 0 0.5rem 0
+  text-transform: uppercase
+  color: var(--accent)
+
+.game-genre
+  font-size: 0.85rem
+  color: color-mix(in lch, var(--accent), transparent 30%)
+  margin: 0 0 0.75rem 0
+
+.game-price
+  display: flex
+  align-items: center
+  gap: 0.5rem
+
+.price-original
+  text-decoration: line-through
+  color: color-mix(in lch, var(--accent), transparent 50%)
+  font-size: 0.9rem
+
+.price-final
+  color: var(--accent)
+  font-weight: bold
+  font-size: 1.1rem
+
+// Featured Price Styles
+.discount-badge
+  background: var(--shadow)
+  color: white
+  padding: 0.3rem 0.8rem
+  font-weight: bold
+  border-radius: 2px
+  font-size: 1.2rem
+
+.original-price
+  text-decoration: line-through
+  color: color-mix(in lch, var(--accent), transparent 50%)
+  font-size: 1.2rem
+
+.final-price
+  color: var(--accent)
+  font-weight: bold
+  font-size: 1.8rem
+  text-shadow: 0 0 10px var(--accent)
+
+// Genres Grid
+.genres-grid
+  display: grid
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr))
+  gap: 1.5rem
+
+.genre-card
+  cursor: pointer
+  transition: transform 0.3s ease
+
+  &:hover
+    transform: translateY(-5px)
+
+    .backdrop
+      background: color-mix(in lch, var(--accent), transparent 70%)
+
+  h3
+    font-size: 1.2rem
+    margin: 0 0 0.5rem 0
+    text-transform: uppercase
+    color: var(--accent)
+
+  p
+    font-size: 0.9rem
+    color: color-mix(in lch, var(--accent), transparent 30%)
+    margin: 0
+
+// Footer
+.store-footer
+  margin-top: auto
+  background: color-mix(in lch, var(--accent), transparent 97%)
+  border-top: var(--border) solid color-mix(in lch, var(--accent), transparent 70%)
+  padding: 3rem 2rem 1rem
+
+.footer-content
+  max-width: 1400px
+  margin: 0 auto
+  display: grid
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))
+  gap: 2rem
+  margin-bottom: 2rem
+
+.footer-section
+  h4
+    color: var(--accent)
+    text-transform: uppercase
+    margin: 0 0 1rem 0
+    font-size: 1rem
+
+  p, a
+    color: color-mix(in lch, var(--accent), transparent 40%)
+    font-size: 0.9rem
+    margin: 0.5rem 0
+    display: block
+    cursor: pointer
+    transition: color 0.3s ease
+
+    &:hover
+      color: var(--accent)
+
+.footer-bottom
+  text-align: center
+  padding-top: 2rem
+  border-top: 1px solid color-mix(in lch, var(--accent), transparent 90%)
+
+  p
+    margin: 0.5rem 0
+    font-size: 0.85rem
+    color: color-mix(in lch, var(--accent), transparent 50%)
+
+  .version-info
+    font-size: 0.75rem
+    opacity: 0.6
+
+// Responsive Design
+@media (max-width: 1024px)
+  .games-grid
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr))
+
+@media (max-width: 768px)
+  .store-container
+    margin-left: 60px // Keep space for collapsed sidebar
+
+  .featured-game
+    height: 350px
+
+  .featured-content
+    padding: 2rem
+
+  .games-grid
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr))
+    gap: 1rem
+
+  .genres-grid
+    grid-template-columns: 1fr
+
+  .footer-content
+    grid-template-columns: 1fr
+    gap: 1.5rem
+

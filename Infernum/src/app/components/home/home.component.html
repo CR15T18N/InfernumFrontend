@@ -1,0 +1,176 @@
+<app-navbar></app-navbar>
+
+<div class="home-container">
+
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="home-loading">
+        <div class="loading-spinner"></div>
+        <span>Loading…</span>
+    </div>
+
+    <ng-container *ngIf="!isLoading">
+
+        <section class="hero-section" *ngIf="currentFeatured">
+            <div class="hero-bg" [style.background-image]="'url(' + currentFeatured.coverUrl + ')'"></div>
+            <div class="hero-overlay"></div>
+
+            <div class="hero-content">
+                <div class="hero-badge">{{ currentFeatured.genre }}</div>
+                <h1 class="hero-title">
+                    <app-glitch-text [text]="currentFeatured.title"></app-glitch-text>
+                </h1>
+                <p class="hero-desc">{{ currentFeatured.description }}</p>
+
+                <div class="hero-actions">
+                    <div class="hero-price">
+                        <span *ngIf="hasDiscount(currentFeatured)" class="hero-price-original">{{
+                            formatPrice(currentFeatured.price) }}</span>
+                        <span [class.hero-price-sale]="hasDiscount(currentFeatured)">{{ discountedPrice(currentFeatured)
+                            }}</span>
+                        <span *ngIf="hasDiscount(currentFeatured)" class="hero-discount-badge">-{{
+                            currentFeatured.discount }}%</span>
+                    </div>
+                    <button class="btn-buy-hero" [class.owned]="isOwned(currentFeatured)"
+                        [disabled]="buyState[currentFeatured.id!] === 'buying' || buyState[currentFeatured.id!] === 'owned'"
+                        (click)="buyGame(currentFeatured, $event)">
+                        {{ getBuyLabel(currentFeatured) }}
+                    </button>
+                    <button class="btn-details" (click)="navigateToGame(currentFeatured.id)">
+                        View details →
+                    </button>
+                </div>
+            </div>
+
+            <!-- Carousel Controls -->
+            <button class="carousel-arrow carousel-prev" (click)="prevFeatured()">&#8249;</button>
+            <button class="carousel-arrow carousel-next" (click)="nextFeatured()">&#8250;</button>
+
+            <!-- Dot indicators -->
+            <div class="carousel-dots">
+                <button *ngFor="let g of featuredGames; let i = index" class="dot"
+                    [class.active]="i === currentFeaturedIndex" (click)="goToFeatured(i)">
+                </button>
+            </div>
+        </section>
+
+        <section class="store-section" *ngIf="specialOffers.length > 0">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <app-glitch-text text="Special Offers"></app-glitch-text>
+                </h2>
+                <div class="countdown-wrapper">
+                    <span class="countdown-label">Ends in</span>
+                    <span class="countdown-timer">{{ countdownDisplay }}</span>
+                </div>
+            </div>
+
+            <div class="offers-grid">
+                <div *ngFor="let game of specialOffers" class="offer-card" (click)="navigateToGame(game.id)">
+                    <div class="offer-img-wrap">
+                        <img [src]="game.coverUrl" [alt]="game.title" class="offer-img"
+                            onerror="this.src='https://placehold.co/300x180/131313/00ffff?text=?'">
+                        <span class="discount-tag">-{{ game.discount }}%</span>
+                    </div>
+                    <div class="offer-body">
+                        <div class="offer-title">{{ game.title }}</div>
+                        <div class="offer-dev">{{ game.developer }}</div>
+                        <div class="offer-price-row">
+                            <span class="price-original">{{ formatPrice(game.price) }}</span>
+                            <span class="price-final">{{ discountedPrice(game) }}</span>
+                        </div>
+                        <button class="btn-buy-card" [class.owned]="isOwned(game)"
+                            [disabled]="buyState[game.id!] === 'buying' || buyState[game.id!] === 'owned'"
+                            (click)="buyGame(game, $event)">
+                            {{ getBuyLabel(game) }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="store-section" *ngIf="newGames.length > 0">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <app-glitch-text text="New Releases"></app-glitch-text>
+                </h2>
+                <button class="see-all-btn" (click)="navigateToStore()">See all →</button>
+            </div>
+
+            <div class="games-row">
+                <div *ngFor="let game of newGames" class="mini-card" (click)="navigateToGame(game.id)">
+                    <div class="mini-img-wrap">
+                        <img [src]="game.coverUrl" [alt]="game.title" class="mini-img"
+                            onerror="this.src='https://placehold.co/160x220/131313/00ffff?text=?'">
+                        <span *ngIf="hasDiscount(game)" class="mini-discount-badge">-{{ game.discount }}%</span>
+                        <div class="mini-overlay">
+                            <span class="mini-year">{{ game.releaseYear }}</span>
+                        </div>
+                    </div>
+                    <div class="mini-body">
+                        <div class="mini-genre">{{ game.genre }}</div>
+                        <div class="mini-title">{{ game.title }}</div>
+                        <div class="mini-price-block">
+                            <span *ngIf="hasDiscount(game)" class="mini-price-original">{{ formatPrice(game.price)
+                                }}</span>
+                            <span class="mini-price" [class.mini-price-sale]="hasDiscount(game)">{{
+                                discountedPrice(game) }}</span>
+                        </div>
+                        <button class="btn-buy-mini" [class.owned]="isOwned(game)"
+                            [disabled]="buyState[game.id!] === 'buying' || buyState[game.id!] === 'owned'"
+                            (click)="buyGame(game, $event)">
+                            {{ getBuyLabel(game) }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="store-section" *ngIf="topSellers.length > 0">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <app-glitch-text text="Top Sellers"></app-glitch-text>
+                </h2>
+                <button class="see-all-btn" (click)="navigateToStore()">See all →</button>
+            </div>
+
+            <div class="sellers-list">
+                <div *ngFor="let game of topSellers; let i = index" class="seller-row"
+                    (click)="navigateToGame(game.id)">
+                    <span class="seller-rank">#{{ i + 1 }}</span>
+                    <img [src]="game.coverUrl" [alt]="game.title" class="seller-thumb"
+                        onerror="this.src='https://placehold.co/80x80/131313/00ffff?text=?'">
+                    <div class="seller-info">
+                        <div class="seller-title">{{ game.title }}</div>
+                        <div class="seller-dev">{{ game.developer }}</div>
+                    </div>
+                    <div class="seller-right">
+                        <div class="seller-price-block">
+                            <span *ngIf="hasDiscount(game)" class="seller-badge">-{{ game.discount }}%</span>
+                            <span *ngIf="hasDiscount(game)" class="seller-price-orig">{{ formatPrice(game.price)
+                                }}</span>
+                            <span class="seller-price" [class.seller-price-sale]="hasDiscount(game)">{{
+                                discountedPrice(game) }}</span>
+                        </div>
+                        <button class="btn-buy-mini" [class.owned]="isOwned(game)"
+                            [disabled]="buyState[game.id!] === 'buying' || buyState[game.id!] === 'owned'"
+                            (click)="buyGame(game, $event)">
+                            {{ getBuyLabel(game) }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="store-section" *ngIf="genres.length > 0">
+            <h2 class="section-title">
+                <app-glitch-text text="Browse by Genre"></app-glitch-text>
+            </h2>
+            <div class="genre-pills">
+                <button *ngFor="let genre of genres" class="genre-pill" (click)="navigateToStore(genre)">
+                    {{ genre }}
+                </button>
+            </div>
+        </section>
+
+    </ng-container>
+</div>

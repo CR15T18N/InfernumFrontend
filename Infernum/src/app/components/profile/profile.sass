@@ -1,0 +1,622 @@
+.profile-container
+  min-height: 100vh
+  display: flex
+  flex-direction: column
+  margin-left: 60px
+  padding: 2rem
+  background: #131313
+
+.profile-content
+  max-width: 1400px
+  width: 100%
+  margin: 0 auto
+  display: grid
+  grid-template-columns: 350px 1fr
+  gap: 2rem
+  align-items: start
+
+// Sidebar Styles
+.profile-sidebar
+  display: flex
+  flex-direction: column
+  gap: 1.5rem
+  position: sticky
+  top: 2rem
+
+.profile-card,
+.badges-card,
+.info-card,
+.stats-card
+  position: relative
+  padding: 2rem
+  background: color-mix(in lch, var(--accent), transparent 97%)
+  border: var(--border) solid color-mix(in lch, var(--accent), transparent 70%)
+  clip-path: var(--clip)
+
+  .backdrop
+    position: absolute
+    z-index: -1
+    inset: 0
+    background: color-mix(in lch, var(--accent), transparent 95%)
+    clip-path: var(--clip)
+    pointer-events: none
+    transition: background 0.3s ease
+
+    &::before
+      content: ''
+      position: absolute
+      inset: 0
+      background: var(--accent)
+      border: var(--border) solid transparent
+      clip-path: var(--clip)
+      mask: linear-gradient(#0000 0% 100%), linear-gradient(#fff 0% 100%)
+      mask-clip: padding-box, border-box
+      mask-composite: intersect
+      z-index: 2
+
+    .corner
+      position: absolute
+      bottom: 0
+      right: 0
+      height: var(--corner)
+      width: var(--corner)
+
+      &::after
+        content: ''
+        height: calc(var(--border) * 2)
+        width: 200%
+        position: absolute
+        top: 50%
+        left: 50%
+        translate: -50% -50%
+        transform: rotate(135deg)
+        background: var(--accent)
+
+// Profile Picture
+.profile-picture-wrapper
+  display: flex
+  flex-direction: column
+  align-items: center
+  gap: 1rem
+  margin-bottom: 1rem
+
+.picture-frame
+  position: relative
+  width: 180px
+  height: 180px
+  border: 3px solid var(--accent)
+  border-radius: 4px
+  overflow: hidden
+  box-shadow: 0 0 20px color-mix(in lch, var(--accent), transparent 70%), inset 0 0 20px color-mix(in lch, var(--accent), transparent 90%)
+  animation: pulseGlow 3s ease-in-out infinite
+
+@keyframes pulseGlow
+  0%, 100%
+    box-shadow: 0 0 20px color-mix(in lch, var(--accent), transparent 70%), inset 0 0 20px color-mix(in lch, var(--accent), transparent 90%)
+  50%
+    box-shadow: 0 0 30px color-mix(in lch, var(--accent), transparent 50%), inset 0 0 30px color-mix(in lch, var(--accent), transparent 80%)
+
+.profile-picture
+  width: 100%
+  height: 100%
+  object-fit: cover
+  display: block
+
+.level-badge
+  position: absolute
+  bottom: -5px
+  right: -5px
+  background: var(--shadow)
+  border: 2px solid var(--accent)
+  width: 50px
+  height: 50px
+  border-radius: 50%
+  display: flex
+  align-items: center
+  justify-content: center
+  font-weight: bold
+  font-size: 1.2rem
+  box-shadow: 0 0 15px var(--shadow)
+
+.level-number
+  color: var(--accent)
+  text-shadow: 0 0 10px var(--accent)
+
+.picture-upload
+  width: 100%
+  text-align: center
+
+.upload-label
+  display: inline-block
+  cursor: pointer
+  padding: 0.5rem 1rem
+  background: color-mix(in lch, var(--accent), transparent 90%)
+  border: 1px solid var(--accent)
+  transition: all 0.3s ease
+
+  &:hover
+    background: var(--accent)
+    color: #131313
+
+.file-input
+  display: none
+
+// Profile Info
+.profile-name
+  text-align: center
+  font-size: 1.8rem
+  margin-bottom: 0.5rem
+  text-transform: uppercase
+
+.profile-username
+  text-align: center
+  color: color-mix(in lch, var(--accent), transparent 40%)
+  font-size: 1rem
+  margin-bottom: 1rem
+
+.profile-meta
+  display: flex
+  flex-direction: column
+  align-items: center
+  gap: 0.25rem
+  padding-top: 1rem
+  border-top: 1px solid color-mix(in lch, var(--accent), transparent 80%)
+
+.meta-label
+  font-size: 0.8rem
+  color: color-mix(in lch, var(--accent), transparent 50%)
+  text-transform: uppercase
+
+.meta-value
+  font-size: 0.9rem
+  color: var(--accent)
+
+// Badges
+.section-title
+  font-size: 1.3rem
+  margin: 0 0 1rem 0
+  text-transform: uppercase
+  color: var(--accent)
+
+.badges-grid
+  display: grid
+  grid-template-columns: repeat(2, 1fr)
+  gap: 1rem
+
+.badge-item
+  display: flex
+  flex-direction: column
+  align-items: center
+  gap: 0.5rem
+  padding: 1rem
+  background: color-mix(in lch, var(--accent), transparent 95%)
+  border: 1px solid color-mix(in lch, var(--accent), transparent 80%)
+  border-radius: 4px
+  transition: all 0.3s ease
+  cursor: pointer
+
+  &:hover
+    border-color: var(--accent)
+    transform: translateY(-3px)
+    box-shadow: 0 5px 15px color-mix(in lch, var(--accent), transparent 80%)
+
+.badge-icon
+  font-size: 2rem
+
+.badge-name
+  font-size: 0.75rem
+  text-align: center
+  color: var(--accent)
+
+.no-badges
+  grid-column: 1 / -1
+  text-align: center
+  padding: 2rem
+  color: color-mix(in lch, var(--accent), transparent 50%)
+  font-style: italic
+
+// Main Content
+.profile-main
+  display: flex
+  flex-direction: column
+  gap: 2rem
+
+.profile-header
+  display: flex
+  justify-content: space-between
+  align-items: center
+  margin-bottom: 1rem
+
+  h1
+    font-size: 2.5rem
+    margin: 0
+    text-transform: uppercase
+
+.header-actions
+  display: flex
+  gap: 1rem
+
+// Message
+.message
+  padding: 1rem
+  border-radius: 4px
+  margin-bottom: 1rem
+  animation: slideIn 0.3s ease
+
+  &.success
+    background: color-mix(in lch, var(--accent), transparent 90%)
+    border: 1px solid var(--accent)
+    color: var(--accent)
+
+  &.error
+    background: color-mix(in lch, var(--shadow), transparent 90%)
+    border: 1px solid var(--shadow)
+    color: var(--shadow)
+
+@keyframes slideIn
+  from
+    opacity: 0
+    transform: translateY(-10px)
+  to
+    opacity: 1
+    transform: translateY(0)
+
+// Info Card
+.card-title
+  font-size: 1.5rem
+  margin: 0 0 1.5rem 0
+  text-transform: uppercase
+  color: var(--accent)
+  padding-bottom: 0.5rem
+  border-bottom: 2px solid color-mix(in lch, var(--accent), transparent 80%)
+
+.info-grid
+  display: grid
+  grid-template-columns: repeat(2, 1fr)
+  gap: 1.5rem
+  margin-bottom: 2rem
+
+.info-item
+  display: flex
+  flex-direction: column
+  gap: 0.5rem
+
+.info-label
+  font-size: 0.85rem
+  color: color-mix(in lch, var(--accent), transparent 40%)
+  text-transform: uppercase
+  letter-spacing: 0.05em
+
+.info-value
+  font-size: 1.1rem
+  color: var(--accent)
+  padding: 0.75rem
+  background: color-mix(in lch, var(--accent), transparent 95%)
+  border: 1px solid color-mix(in lch, var(--accent), transparent 85%)
+  border-radius: 2px
+
+// Form Inputs
+.cyber-input,
+.cyber-textarea
+  width: 100%
+  padding: 0.75rem
+  background: color-mix(in lch, var(--accent), transparent 97%)
+  border: 1px solid color-mix(in lch, var(--accent), transparent 70%)
+  color: var(--accent)
+  font-family: 'Cyber', sans-serif
+  font-size: 1rem
+  outline: none
+  transition: all 0.3s ease
+
+  &:focus
+    border-color: var(--accent)
+    box-shadow: 0 0 10px color-mix(in lch, var(--accent), transparent 80%)
+
+  &::placeholder
+    color: color-mix(in lch, var(--accent), transparent 70%)
+
+.cyber-textarea
+  resize: vertical
+  min-height: 100px
+
+// Bio Section
+.bio-section
+  display: flex
+  flex-direction: column
+  gap: 0.5rem
+
+.bio-display
+  font-size: 1rem
+  color: var(--accent)
+  padding: 1rem
+  background: color-mix(in lch, var(--accent), transparent 95%)
+  border: 1px solid color-mix(in lch, var(--accent), transparent 85%)
+  border-radius: 2px
+  min-height: 100px
+  font-style: italic
+
+.char-count
+  text-align: right
+  font-size: 0.8rem
+  color: color-mix(in lch, var(--accent), transparent 50%)
+
+// Edit Actions
+.edit-actions
+  display: flex
+  gap: 1rem
+  margin-top: 2rem
+  padding-top: 2rem
+  border-top: 1px solid color-mix(in lch, var(--accent), transparent 80%)
+
+// Level Display
+.level-display
+  display: flex
+  align-items: center
+  gap: 1rem
+
+.level-number-large
+  font-size: 2rem
+  font-weight: bold
+  color: var(--accent)
+  text-shadow: 0 0 10px var(--accent)
+
+.level-bar
+  flex: 1
+  height: 10px
+  background: color-mix(in lch, var(--accent), transparent 90%)
+  border: 1px solid color-mix(in lch, var(--accent), transparent 70%)
+  border-radius: 5px
+  overflow: hidden
+
+.level-progress
+  height: 100%
+  background: linear-gradient(90deg, var(--accent), var(--shadow))
+  transition: width 0.5s ease
+  box-shadow: 0 0 10px var(--accent)
+
+// Stats Card
+.stats-grid
+  display: grid
+  grid-template-columns: repeat(4, 1fr)
+  gap: 1.5rem
+
+.stat-item
+  display: flex
+  flex-direction: column
+  align-items: center
+  gap: 0.5rem
+  padding: 1.5rem
+  background: color-mix(in lch, var(--accent), transparent 95%)
+  border: 1px solid color-mix(in lch, var(--accent), transparent 80%)
+  border-radius: 4px
+  transition: all 0.3s ease
+
+  &:hover
+    border-color: var(--accent)
+    transform: translateY(-3px)
+    box-shadow: 0 5px 15px color-mix(in lch, var(--accent), transparent 80%)
+
+.stat-value
+  font-size: 2rem
+  font-weight: bold
+  color: var(--accent)
+  text-shadow: 0 0 10px var(--accent)
+
+.stat-label
+  font-size: 0.85rem
+  color: color-mix(in lch, var(--accent), transparent 40%)
+  text-transform: uppercase
+
+// Responsive Design
+@media (max-width: 1024px)
+  .profile-content
+    grid-template-columns: 1fr
+  
+  .profile-sidebar
+    position: relative
+    top: 0
+
+  .stats-grid
+    grid-template-columns: repeat(2, 1fr)
+
+@media (max-width: 768px)
+  .profile-container
+    margin-left: 60px
+    padding: 1rem
+
+  .info-grid
+    grid-template-columns: 1fr
+
+  .stats-grid
+    grid-template-columns: repeat(2, 1fr)
+
+  .badges-grid
+    grid-template-columns: 1fr
+
+  .edit-actions
+    flex-direction: column
+
+@media (max-width: 480px)
+  .profile-header
+    flex-direction: column
+    align-items: flex-start
+    gap: 1rem
+
+  .stats-grid
+    grid-template-columns: 1fr
+
+// ─── Library Card ─────────────────────────────────────────────────────────────
+
+.library-card
+  position: relative
+  padding: 2rem
+  background: color-mix(in lch, var(--accent), transparent 97%)
+  border: var(--border) solid color-mix(in lch, var(--accent), transparent 70%)
+  clip-path: var(--clip)
+
+  .backdrop
+    position: absolute
+    z-index: -1
+    inset: 0
+    background: color-mix(in lch, var(--accent), transparent 95%)
+    clip-path: var(--clip)
+    pointer-events: none
+    transition: background 0.3s ease
+
+    &::before
+      content: ''
+      position: absolute
+      inset: 0
+      background: var(--accent)
+      border: var(--border) solid transparent
+      clip-path: var(--clip)
+      mask: linear-gradient(#0000 0% 100%), linear-gradient(#fff 0% 100%)
+      mask-clip: padding-box, border-box
+      mask-composite: intersect
+      z-index: 2
+
+    .corner
+      position: absolute
+      bottom: 0
+      right: 0
+      height: var(--corner)
+      width: var(--corner)
+
+      &::after
+        content: ''
+        height: calc(var(--border) * 2)
+        width: 200%
+        position: absolute
+        top: 50%
+        left: 50%
+        translate: -50% -50%
+        transform: rotate(135deg)
+        background: var(--accent)
+
+// Game grid
+.library-grid
+  display: grid
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr))
+  gap: 1.5rem
+
+.game-card
+  display: flex
+  flex-direction: column
+  gap: 0.75rem
+  cursor: default
+  transition: transform 0.25s ease
+
+  &:hover
+    transform: translateY(-6px)
+
+    .game-cover-wrapper
+      box-shadow: 0 0 24px color-mix(in lch, var(--accent), transparent 50%)
+
+    .game-overlay
+      opacity: 1
+
+.game-cover-wrapper
+  position: relative
+  border: 2px solid color-mix(in lch, var(--accent), transparent 70%)
+  border-radius: 4px
+  overflow: hidden
+  aspect-ratio: 2 / 3
+  box-shadow: 0 0 12px color-mix(in lch, var(--accent), transparent 85%)
+  transition: box-shadow 0.25s ease
+
+.game-cover
+  width: 100%
+  height: 100%
+  object-fit: cover
+  display: block
+
+.game-overlay
+  position: absolute
+  inset: 0
+  background: linear-gradient(to top, color-mix(in lch, #131313, transparent 10%) 0%, transparent 60%)
+  display: flex
+  align-items: flex-end
+  padding: 0.5rem
+  opacity: 0
+  transition: opacity 0.25s ease
+
+.game-genre-tag
+  font-size: 0.7rem
+  padding: 0.2rem 0.5rem
+  background: var(--accent)
+  color: #131313
+  border-radius: 2px
+  font-weight: bold
+  text-transform: uppercase
+  letter-spacing: 0.05em
+
+.game-info
+  display: flex
+  flex-direction: column
+  gap: 0.2rem
+
+.game-title
+  font-size: 0.9rem
+  font-weight: bold
+  color: var(--accent)
+  white-space: nowrap
+  overflow: hidden
+  text-overflow: ellipsis
+
+.game-developer
+  font-size: 0.75rem
+  color: color-mix(in lch, var(--accent), transparent 40%)
+
+.game-year
+  font-size: 0.75rem
+  color: color-mix(in lch, var(--accent), transparent 55%)
+
+// Loading
+.library-loading
+  display: flex
+  align-items: center
+  gap: 1rem
+  padding: 2rem 0
+  color: color-mix(in lch, var(--accent), transparent 40%)
+  font-size: 0.9rem
+
+.loading-spinner
+  width: 28px
+  height: 28px
+  border: 3px solid color-mix(in lch, var(--accent), transparent 80%)
+  border-top-color: var(--accent)
+  border-radius: 50%
+  animation: spin 0.8s linear infinite
+  flex-shrink: 0
+
+@keyframes spin
+  to
+    transform: rotate(360deg)
+
+// Empty state
+.library-empty
+  display: flex
+  flex-direction: column
+  align-items: center
+  gap: 0.75rem
+  padding: 3rem 1rem
+  text-align: center
+  color: color-mix(in lch, var(--accent), transparent 40%)
+
+.empty-icon
+  font-size: 3rem
+
+.empty-sub
+  font-size: 0.85rem
+  color: color-mix(in lch, var(--accent), transparent 60%)
+
+// Responsive library
+@media (max-width: 768px)
+  .library-grid
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr))
+    gap: 1rem
+
+@media (max-width: 480px)
+  .library-grid
+    grid-template-columns: repeat(2, 1fr)
+    gap: 0.75rem
