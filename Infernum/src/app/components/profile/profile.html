@@ -1,181 +1,205 @@
 <app-navbar></app-navbar>
 
 <div class="profile-container">
-    <div class="profile-content">
-        <!-- Left Sidebar - Profile Card -->
-        <aside class="profile-sidebar">
-            <div class="profile-card">
-                <div class="backdrop">
-                    <div class="corner"></div>
-                </div>
+  <div class="profile-content">
+    <!-- Left Sidebar - Profile Card -->
+    <aside class="profile-sidebar">
+      <div class="profile-card">
+        <div class="backdrop">
+          <div class="corner"></div>
+        </div>
 
-                <!-- Profile Picture -->
-                <div class="profile-picture-wrapper">
-                    <div class="picture-frame">
-                        <img [src]="isEditMode ? getEditProfilePicture() : getProfilePicture()" [alt]="displayName"
-                            class="profile-picture">
-                    </div>
+        <!-- Profile Picture -->
+        <div class="profile-picture-wrapper">
+          <div class="picture-frame">
+            <img [src]="isEditMode ? getEditProfilePicture() : getProfilePicture()" [alt]="displayName"
+              class="profile-picture">
+          </div>
 
-                    <div *ngIf="isEditMode" class="picture-upload">
-                        <label for="profile-pic-input" class="upload-label">
-                            <app-glitch-text text="Change Photo"></app-glitch-text>
-                        </label>
-                        <input id="profile-pic-input" type="file" accept="image/*" (change)="onFileSelected($event)"
-                            class="file-input">
-                    </div>
-                </div>
-
-                <!-- Display Name -->
-                <div class="profile-name">
-                    <app-glitch-text [text]="displayName"></app-glitch-text>
-                </div>
-
-                <!-- Username -->
-                <div class="profile-username">
-                    @{{ currentUser?.username }}
-                </div>
-
-                <!-- Join Date -->
-                <div class="profile-meta">
-                    <span class="meta-label">Member since</span>
-                    <span class="meta-value">{{ joinDate }}</span>
-                </div>
+          @if (isEditMode) {
+            <div class="picture-upload">
+              <label for="profile-pic-input" class="upload-label">
+                <app-glitch-text text="Change Photo"></app-glitch-text>
+              </label>
+              <input id="profile-pic-input" type="file" accept="image/*" (change)="onFileSelected($event)"
+                class="file-input">
             </div>
-        </aside>
+          }
+        </div>
 
-        <!-- Main Content Area -->
-        <main class="profile-main">
-            <!-- Header with Edit Button -->
-            <div class="profile-header">
-                <h1>
-                    <app-glitch-text text="User Profile"></app-glitch-text>
-                </h1>
-                <div class="header-actions">
-                    <app-cyber-button *ngIf="!isEditMode" [label]="'Edit'" (clicked)="toggleEditMode()">
-                    </app-cyber-button>
-                </div>
+        <!-- Display Name -->
+        <div class="profile-name">
+          <app-glitch-text [text]="displayName"></app-glitch-text>
+        </div>
+
+        <!-- Username -->
+        <div class="profile-username">
+          @{{ currentUser?.username }}
+        </div>
+
+        <!-- Join Date -->
+        <div class="profile-meta">
+          <span class="meta-label">Member since</span>
+          <span class="meta-value">{{ joinDate }}</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="profile-main">
+      <!-- Header with Edit Button -->
+      <div class="profile-header">
+        <h1>
+          <app-glitch-text text="User Profile"></app-glitch-text>
+        </h1>
+        <div class="header-actions">
+          @if (!isEditMode) {
+            <app-cyber-button [label]="'Edit'" (clicked)="toggleEditMode()">
+            </app-cyber-button>
+          }
+        </div>
+      </div>
+
+      <!-- Message Display -->
+      @if (message) {
+        <div class="message" [class.success]="messageType === 'success'"
+          [class.error]="messageType === 'error'">
+          {{ message }}
+        </div>
+      }
+
+      <!-- Profile Information -->
+      <div class="info-card">
+        <div class="backdrop">
+          <div class="corner"></div>
+        </div>
+
+        <h2 class="card-title">
+          <app-glitch-text text="Information"></app-glitch-text>
+        </h2>
+
+        <div class="info-grid">
+          <!-- Display Name -->
+          <div class="info-item">
+            <label class="info-label">Display name</label>
+            @if (!isEditMode) {
+              <div class="info-value">
+                {{ currentUser?.displayName || currentUser?.username }}
+              </div>
+            }
+            @if (isEditMode) {
+              <input type="text" [(ngModel)]="editData.displayName" class="cyber-input"
+                placeholder="Your display name">
+            }
+          </div>
+
+          <!-- Email (read-only) -->
+          <div class="info-item">
+            <label class="info-label">Email</label>
+            <div class="info-value">{{ currentUser?.email }}</div>
+          </div>
+
+          <!-- Username (read-only) -->
+          <div class="info-item">
+            <label class="info-label">Username</label>
+            <div class="info-value">{{ currentUser?.username }}</div>
+          </div>
+        </div>
+
+        <!-- Bio Section -->
+        <div class="bio-section">
+          <label class="info-label">Bio</label>
+          @if (!isEditMode) {
+            <div class="bio-display">
+              {{ currentUser?.bio || 'No bio' }}
             </div>
-
-            <!-- Message Display -->
-            <div *ngIf="message" class="message" [class.success]="messageType === 'success'"
-                [class.error]="messageType === 'error'">
-                {{ message }}
+          }
+          @if (isEditMode) {
+            <textarea [(ngModel)]="editData.bio" class="cyber-textarea"
+            placeholder="Tell us about yourself..." maxlength="200" rows="4"></textarea>
+          }
+          @if (isEditMode) {
+            <div class="char-count">
+              {{ editData.bio.length }} / 200
             </div>
+          }
+        </div>
 
-            <!-- Profile Information -->
-            <div class="info-card">
-                <div class="backdrop">
-                    <div class="corner"></div>
-                </div>
+        <!-- Edit Mode Actions -->
+        @if (isEditMode) {
+          <div class="edit-actions">
+            <app-cyber-button [label]="isLoading ? 'Saving...' : 'Save'" [disabled]="isLoading"
+              (clicked)="saveProfile()">
+            </app-cyber-button>
+            <app-cyber-button [label]="'Cancel'" [disabled]="isLoading" (clicked)="cancelEdit()">
+            </app-cyber-button>
+          </div>
+        }
+      </div>
 
-                <h2 class="card-title">
-                    <app-glitch-text text="Information"></app-glitch-text>
-                </h2>
+      <!-- Stats Card -->
+      <div class="stats-card">
+        <div class="backdrop">
+          <div class="corner"></div>
+        </div>
 
-                <div class="info-grid">
-                    <!-- Display Name -->
-                    <div class="info-item">
-                        <label class="info-label">Display name</label>
-                        <div *ngIf="!isEditMode" class="info-value">
-                            {{ currentUser?.displayName || currentUser?.username }}
-                        </div>
-                        <input *ngIf="isEditMode" type="text" [(ngModel)]="editData.displayName" class="cyber-input"
-                            placeholder="Your display name">
+        <h2 class="card-title">
+          <app-glitch-text text="Stats"></app-glitch-text>
+        </h2>
+
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-value">{{ purchasedCount }}</div>
+            <div class="stat-label">Games</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">Member since</div>
+            <div class="stat-label">{{ joinDate }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Library Card -->
+      <div class="library-card">
+        <div class="backdrop">
+          <div class="corner"></div>
+        </div>
+
+        <h2 class="card-title">
+          <app-glitch-text text="My Library"></app-glitch-text>
+        </h2>
+
+        <!-- Empty state -->
+        @if (purchasedGames.length === 0) {
+          <div class="library-empty">
+            <div class="empty-icon">🎮</div>
+            <p>You have no games in your library yet.</p>
+            <p class="empty-sub">Visit the store to add games to your collection.</p>
+          </div>
+        }
+
+        <!-- Game grid -->
+        @if (purchasedGames.length > 0) {
+          <div class="library-grid">
+            @for (game of purchasedGames; track game.id) {
+              <a [routerLink]="['/game', game.id]" class="game-card">
+                <div class="game-cover-wrapper">
+                  <img [src]="game.coverUrl" [alt]="game.title" class="game-cover"
+                    onerror="this.src='https://placehold.co/200x280/131313/00ffff?text=?'">
+                    <div class="game-overlay">
+                      <span class="game-genre-tag">{{ game.genre }}</span>
                     </div>
-
-                    <!-- Email (read-only) -->
-                    <div class="info-item">
-                        <label class="info-label">Email</label>
-                        <div class="info-value">{{ currentUser?.email }}</div>
-                    </div>
-
-                    <!-- Username (read-only) -->
-                    <div class="info-item">
-                        <label class="info-label">Username</label>
-                        <div class="info-value">{{ currentUser?.username }}</div>
-                    </div>
-                </div>
-
-                <!-- Bio Section -->
-                <div class="bio-section">
-                    <label class="info-label">Bio</label>
-                    <div *ngIf="!isEditMode" class="bio-display">
-                        {{ currentUser?.bio || 'No bio' }}
-                    </div>
-                    <textarea *ngIf="isEditMode" [(ngModel)]="editData.bio" class="cyber-textarea"
-                        placeholder="Tell us about yourself..." maxlength="200" rows="4"></textarea>
-                    <div *ngIf="isEditMode" class="char-count">
-                        {{ editData.bio.length }} / 200
-                    </div>
-                </div>
-
-                <!-- Edit Mode Actions -->
-                <div *ngIf="isEditMode" class="edit-actions">
-                    <app-cyber-button [label]="isLoading ? 'Saving...' : 'Save'" [disabled]="isLoading"
-                        (clicked)="saveProfile()">
-                    </app-cyber-button>
-                    <app-cyber-button [label]="'Cancel'" [disabled]="isLoading" (clicked)="cancelEdit()">
-                    </app-cyber-button>
-                </div>
+                  </div>
+                  <div class="game-info">
+                    <div class="game-title">{{ game.title }}</div>
+                    <div class="game-developer">{{ game.developer }}</div>
+                    <div class="game-year">{{ game.releaseYear }}</div>
+                  </div>
+                </a>
+              }
             </div>
-
-            <!-- Stats Card -->
-            <div class="stats-card">
-                <div class="backdrop">
-                    <div class="corner"></div>
-                </div>
-
-                <h2 class="card-title">
-                    <app-glitch-text text="Stats"></app-glitch-text>
-                </h2>
-
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-value">{{ purchasedCount }}</div>
-                        <div class="stat-label">Games</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">Member since</div>
-                        <div class="stat-label">{{ joinDate }}</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Library Card -->
-            <div class="library-card">
-                <div class="backdrop">
-                    <div class="corner"></div>
-                </div>
-
-                <h2 class="card-title">
-                    <app-glitch-text text="My Library"></app-glitch-text>
-                </h2>
-
-                <!-- Empty state -->
-                <div *ngIf="purchasedGames.length === 0" class="library-empty">
-                    <div class="empty-icon">🎮</div>
-                    <p>You have no games in your library yet.</p>
-                    <p class="empty-sub">Visit the store to add games to your collection.</p>
-                </div>
-
-                <!-- Game grid -->
-                <div *ngIf="purchasedGames.length > 0" class="library-grid">
-                    <a *ngFor="let game of purchasedGames" [routerLink]="['/game', game.id]" class="game-card">
-                        <div class="game-cover-wrapper">
-                            <img [src]="game.coverUrl" [alt]="game.title" class="game-cover"
-                                onerror="this.src='https://placehold.co/200x280/131313/00ffff?text=?'">
-                            <div class="game-overlay">
-                                <span class="game-genre-tag">{{ game.genre }}</span>
-                            </div>
-                        </div>
-                        <div class="game-info">
-                            <div class="game-title">{{ game.title }}</div>
-                            <div class="game-developer">{{ game.developer }}</div>
-                            <div class="game-year">{{ game.releaseYear }}</div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </main>
+          }
+        </div>
+      </main>
     </div>
-</div>
+  </div>

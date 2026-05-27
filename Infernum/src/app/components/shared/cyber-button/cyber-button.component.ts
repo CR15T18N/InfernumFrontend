@@ -1,10 +1,10 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { GlitchTextComponent } from '../glitch-text/glitch-text.component';
 
 @Component({
     selector: 'app-cyber-button',
-    imports: [CommonModule, GlitchTextComponent],
+    imports: [GlitchTextComponent],
     templateUrl: './cyber-button.component.html',
     styleUrl: './cyber-button.component.sass'
 })

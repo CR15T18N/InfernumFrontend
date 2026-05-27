@@ -3,6 +3,8 @@
   <span class="backdrop">
     <span class="corner"></span>
   </span>
-  <kbd *ngIf="kbd">{{ kbd }}</kbd>
+  @if (kbd) {
+    <kbd>{{ kbd }}</kbd>
+  }
   <app-glitch-text [text]="label" class="btn-text"></app-glitch-text>
 </button>

@@ -1,10 +1,10 @@
 import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
     selector: 'app-glitch-text',
     standalone: true,
-    imports: [CommonModule],
+    imports: [],
     templateUrl: './glitch-text.component.html',
     styleUrl: './glitch-text.component.sass'
 })

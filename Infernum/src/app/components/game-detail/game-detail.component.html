@@ -2,96 +2,124 @@
 
 <div class="detail-container">
 
-    <!-- Loading -->
-    <div *ngIf="isLoading" class="detail-loading">
-        <div class="loading-spinner"></div>
+  <!-- Loading -->
+  @if (isLoading) {
+    <div class="detail-loading">
+      <div class="loading-spinner"></div>
     </div>
+  }
 
-    <!-- Content -->
-    <div *ngIf="!isLoading && game" class="detail-content">
-
-        <!-- Back button -->
-        <button class="back-btn" (click)="goBack()">
-            <span class="back-arrow">←</span> Back
-        </button>
-
-        <!-- Hero section -->
-        <div class="hero">
-            <div class="cover-wrapper">
-                <img [src]="game.coverUrl" [alt]="game.title" class="cover-img"
-                    onerror="this.src='https://placehold.co/300x420/131313/00ffff?text=?'">
-                <div class="cover-glow"></div>
+  <!-- Content -->
+  @if (!isLoading && game) {
+    <div class="detail-content">
+      <!-- Back button -->
+      <button class="back-btn" (click)="goBack()">
+        <span class="back-arrow">←</span> Back
+      </button>
+      <!-- Title At Top -->
+      <h1 class="main-title">
+        <app-glitch-text [text]="game.title"></app-glitch-text>
+      </h1>
+      <div class="steam-layout">
+        <!-- Main Content Area (Now Single Column for consistency) -->
+        <div class="main-column">
+          <!-- Viewer -->
+          <div class="main-viewer">
+            <img [src]="getActiveImageUrl()" [alt]="game.title" class="active-img"
+              onerror="this.src='https://placehold.co/800x450/131313/00ffff?text=?'">
+              @if (game.images && game.images.length > 1) {
+                <button class="viewer-arrow left" (click)="prevImage()"
+                  >
+                ‹
+              </button>
+            }
+            @if (game.images && game.images.length > 1) {
+              <button class="viewer-arrow right" (click)="nextImage()"
+                >
+                ›
+              </button>
+            }
+          </div>
+          <!-- Carousel -->
+          @if (game.images && game.images.length > 0) {
+            <div class="carousel-strip">
+              @for (img of game.images; track img; let i = $index) {
+                <div class="thumb-wrapper"
+                  [class.active]="i === activeImageIndex" (click)="setActiveImage(i)">
+                  <img [src]="getThumbUrl(img)" class="thumb-img">
+                  <div class="thumb-highlight"></div>
+                </div>
+              }
             </div>
-
-            <div class="hero-info">
-                <div class="game-genre-tags">
-                    <span class="genre-tag">{{ game.genre }}</span>
+          }
+          <!-- Purchase Card (Matches image width) -->
+          <div class="purchase-box">
+            @if (purchaseMessage) {
+              <div class="purchase-message"
+                [class.success]="purchaseMessageType === 'success'"
+                [class.error]="purchaseMessageType === 'error'">
+                {{ purchaseMessage }}
+              </div>
+            }
+            <div class="price-row">
+              <div class="price-stack">
+                @if (hasDiscount(game)) {
+                  <div class="discount-label">-{{ game.discount }}%</div>
+                }
+                <div class="price-values">
+                  @if (hasDiscount(game)) {
+                    <span class="price-old">{{ formatPrice(game.price) }}</span>
+                  }
+                  <span class="price-current" [class.on-sale]="hasDiscount(game)">{{ finalPrice(game)
+                  }}</span>
                 </div>
-
-                <h1 class="game-title">
-                    <app-glitch-text [text]="game.title"></app-glitch-text>
-                </h1>
-
-                <div class="game-meta">
-                    <div class="meta-row">
-                        <span class="meta-label">Developer</span>
-                        <span class="meta-value">{{ game.developer }}</span>
-                    </div>
-                    <div class="meta-row">
-                        <span class="meta-label">Year</span>
-                        <span class="meta-value">{{ game.releaseYear }}</span>
-                    </div>
-                </div>
-
-                <p class="game-description">{{ game.description }}</p>
-
-                <!-- Purchase / Owned section -->
-                <div class="purchase-section">
-                    <div *ngIf="purchaseMessage" class="purchase-message"
-                        [class.success]="purchaseMessageType === 'success'"
-                        [class.error]="purchaseMessageType === 'error'">
-                        {{ purchaseMessage }}
-                    </div>
-
-                    <div class="price-action">
-                        <div class="price-display">
-                            <span class="price-label">Price</span>
-                            <div class="price-values">
-                                <!-- Discount badge -->
-                                <span *ngIf="hasDiscount(game)" class="detail-discount-badge">
-                                    -{{ game.discount }}%
-                                </span>
-                                <!-- Original price (strikethrough when discounted) -->
-                                <span *ngIf="hasDiscount(game)" class="price-original-detail">
-                                    {{ formatPrice(game.price) }}
-                                </span>
-                                <!-- Final price -->
-                                <span class="price-value" [class.price-on-sale]="hasDiscount(game)">
-                                    {{ finalPrice(game) }}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="action-btns">
-                            <app-cyber-button *ngIf="!isOwned" [label]="isPurchasing ? 'Processing...' : 'Buy'"
-                                [disabled]="isPurchasing" (clicked)="purchase()">
-                            </app-cyber-button>
-
-                            <div *ngIf="isOwned" class="owned-badge">
-                                <span class="owned-icon">✓</span>
-                                <span>In your library</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+              </div>
             </div>
+            <div class="purchase-actions">
+              @if (!isOwned) {
+                <app-cyber-button [label]="isPurchasing ? 'BUYING...' : 'ADD TO CART'"
+                  [disabled]="isPurchasing" (clicked)="purchase()">
+                </app-cyber-button>
+              }
+              @if (isOwned) {
+                <div class="owned-tag">
+                  <span class="owned-icon">✓</span>
+                  <span>IN LIBRARY</span>
+                </div>
+              }
+            </div>
+          </div>
+          <!-- Description Section -->
+          <div class="description-section">
+            <h2 class="section-title">ABOUT THIS GAME</h2>
+            <div class="description-text" [innerHTML]="game.longDescription || game.description"></div>
+          </div>
+          <!-- Meta Panel (Now at the end, same width as image) -->
+          <div class="panel-meta">
+            <div class="meta-row">
+              <span class="meta-label">GENRE</span>
+              <span class="meta-value">{{ (game.allGenres && game.allGenres.length > 0) ?
+              game.allGenres.join(', ') : game.genre }}</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">DEVELOPER</span>
+              <span class="meta-value">{{ game.developer }}</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">RELEASE DATE</span>
+              <span class="meta-value">{{ game.releaseYear }}</span>
+            </div>
+          </div>
         </div>
-
+      </div>
     </div>
+  }
 
-    <!-- Not found -->
-    <div *ngIf="!isLoading && !game" class="not-found">
-        <h2>Game not found</h2>
+  <!-- Not found -->
+  @if (!isLoading && !game) {
+    <div class="not-found">
+      <h2>Game not found</h2>
     </div>
+  }
 
 </div>

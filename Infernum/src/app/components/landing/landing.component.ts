@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { GlitchTextComponent } from '../shared/glitch-text/glitch-text.component';
 import { NavbarComponent } from '../shared/navbar/navbar.component';
 
@@ -17,12 +17,11 @@ interface Game {
 @Component({
     selector: 'app-landing',
     standalone: true,
-    imports: [CommonModule, GlitchTextComponent, NavbarComponent],
+    imports: [GlitchTextComponent, NavbarComponent],
     templateUrl: './landing.component.html',
     styleUrl: './landing.component.sass'
 })
 export class LandingComponent {
-    // Placeholder games - will be replaced by Laravel backend data
     games: Game[] = [
         { id: 1, title: 'Cyber Runner 2077', price: 59.99, discount: 20, genre: 'Action', featured: true },
         { id: 2, title: 'Neon Warfare', price: 49.99, discount: 15, genre: 'FPS', featured: true },

@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { GameService } from '../../services/game.service';
+import { CartService } from '../../services/cart.service';
 import { User, Game } from '../../models/user.model';
 import { NavbarComponent } from '../shared/navbar/navbar.component';
 import { GlitchTextComponent } from '../shared/glitch-text/glitch-text.component';
@@ -10,7 +10,7 @@ import { GlitchTextComponent } from '../shared/glitch-text/glitch-text.component
 @Component({
     selector: 'app-home',
     standalone: true,
-    imports: [CommonModule, NavbarComponent, GlitchTextComponent],
+    imports: [NavbarComponent, GlitchTextComponent],
     templateUrl: './home.component.html',
     styleUrl: './home.component.sass'
 })
@@ -36,9 +36,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     constructor(
         private authService: AuthService,
         private gameService: GameService,
+        private cartService: CartService,
         private router: Router,
         private cdr: ChangeDetectorRef
-    ) { }
+    ) {
+        this.updateCountdown();
+    }
 
     async ngOnInit() {
         this.authService.currentUser.subscribe(u => (this.currentUser = u));
@@ -56,7 +59,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
         this.carouselTimer = setInterval(() => this.nextFeatured(), 5000);
 
-        this.updateCountdown();
         this.countdownTimer = setInterval(() => {
             this.updateCountdown();
             this.cdr.detectChanges();
@@ -90,7 +92,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     private async loadOwnedGames() {
         if (!this.currentUser?.id) return;
-        const library = await this.gameService.getLibrary(this.currentUser.id);
+        const library = await this.gameService.getLibrary();
         library.forEach(g => { if (g.id != null) this.buyState[g.id] = 'owned'; });
     }
 
@@ -141,8 +143,19 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
 
         try {
-            const ok = await this.gameService.purchaseGame(this.currentUser.id, game.id);
-            this.buyState[game.id] = ok ? 'owned' : 'error';
+            const cartResult = await this.cartService.addToCart(game.id);
+            if (!cartResult.success) {
+                this.buyState[game.id] = 'error';
+                this.cdr.detectChanges();
+                return;
+            }
+
+            const checkoutResult = await this.cartService.checkout(cartResult.cartId!);
+            if (checkoutResult.success && checkoutResult.url) {
+                window.location.href = checkoutResult.url;
+            } else {
+                this.buyState[game.id] = 'error';
+            }
         } catch {
             this.buyState[game.id] = 'error';
         }

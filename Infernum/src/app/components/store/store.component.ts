@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { GameService } from '../../services/game.service';
@@ -11,13 +11,15 @@ import { GlitchTextComponent } from '../shared/glitch-text/glitch-text.component
 @Component({
     selector: 'app-store',
     standalone: true,
-    imports: [CommonModule, RouterLink, FormsModule, NavbarComponent, GlitchTextComponent],
+    imports: [RouterLink, FormsModule, NavbarComponent, GlitchTextComponent],
     templateUrl: './store.component.html',
     styleUrl: './store.component.sass',
 })
 export class StoreComponent implements OnInit {
     allGames: Game[] = [];
+    currentFilteredList: Game[] = [];
     filteredGames: Game[] = [];
+
     searchQuery = '';
     selectedGenre = '';
     isLoading = true;
@@ -25,7 +27,7 @@ export class StoreComponent implements OnInit {
     genres: string[] = [];
     pagination: PaginationInfo | null = null;
     currentPage = 1;
-    pageSize = 8; // Showing 8 games per page for a nice grid
+    pageSize = 8;
 
     constructor(
         private gameService: GameService,
@@ -36,19 +38,26 @@ export class StoreComponent implements OnInit {
 
     async ngOnInit(): Promise<void> {
         try {
-            // Get all genres for the filter dropdown from the full list
-            const all = await this.gameService.getAllGames();
-            this.genres = [...new Set(all.map(g => g.genre))];
+            this.isLoading = true;
+            this.allGames = await this.gameService.getAllGames();
 
-            await this.loadPage(1);
+            const genreSet = new Set<string>();
+            this.allGames.forEach(g => {
+                if (g.allGenres) {
+                    g.allGenres.forEach(genre => genreSet.add(genre));
+                } else {
+                    genreSet.add(g.genre);
+                }
+            });
+            this.genres = [...genreSet].filter(g => g !== 'Unknown').sort();
 
             this.route.queryParams.subscribe(params => {
                 if (params['genre']) {
                     this.selectedGenre = params['genre'];
                 }
                 this.applyFilters();
-                this.cdr.detectChanges();
             });
+
         } catch (error) {
             console.error('Error loading store:', error);
         } finally {
@@ -57,30 +66,53 @@ export class StoreComponent implements OnInit {
         }
     }
 
-    async loadPage(page: number): Promise<void> {
-        this.isLoading = true;
-        this.currentPage = page;
+    applyFilters(): void {
+        this.currentPage = 1;
 
-        // Use the new filtered page method to ensure correct pagination metadata
-        const result = await this.gameService.getFilteredGamesPage(this.selectedGenre, this.searchQuery, page);
+        this.currentFilteredList = this.allGames.filter(game => {
+            const matchesGenre = !this.selectedGenre ||
+                (game.allGenres ? game.allGenres.includes(this.selectedGenre) : game.genre === this.selectedGenre);
 
-        if (result) {
-            this.allGames = result.games;
-            this.filteredGames = result.games; // No need for local filtering anymore
-            this.pagination = result.pagination;
-        } else {
-            this.allGames = [];
-            this.filteredGames = [];
-            this.pagination = null;
-        }
+            const matchesSearch = !this.searchQuery ||
+                game.title.toLowerCase().includes(this.searchQuery.toLowerCase());
 
-        this.isLoading = false;
+            return matchesGenre && matchesSearch;
+        });
+
+        this.updatePagination();
+        this.loadCurrentPage();
+    }
+
+    private updatePagination(): void {
+        const total = this.currentFilteredList.length;
+        const lastPage = Math.ceil(total / this.pageSize) || 1;
+
+        this.pagination = {
+            current_page: this.currentPage,
+            total: total,
+            per_page: this.pageSize,
+            last_page: lastPage,
+            has_more_page: this.currentPage < lastPage,
+            next_page: this.currentPage < lastPage ? 'next' : null,
+            previous_page: this.currentPage > 1 ? 'prev' : null
+        };
+    }
+
+    private loadCurrentPage(): void {
+        const startIndex = (this.currentPage - 1) * this.pageSize;
+        const endIndex = startIndex + this.pageSize;
+        this.filteredGames = this.currentFilteredList.slice(startIndex, endIndex);
         this.cdr.detectChanges();
     }
 
-    applyFilters(): void {
-        // Reset to page 1 and reload from server with filters
-        this.loadPage(1);
+    async loadPage(page: number): Promise<void> {
+        if (page < 1 || (this.pagination && page > this.pagination.last_page)) return;
+
+        this.currentPage = page;
+        this.updatePagination();
+        this.loadCurrentPage();
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     clearFilters(): void {

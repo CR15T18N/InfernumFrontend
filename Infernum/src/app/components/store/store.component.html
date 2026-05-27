@@ -2,91 +2,106 @@
 
 <div class="store-container">
 
-    <!-- Header -->
-    <div class="store-header">
-        <div class="store-title">
-            <h1><app-glitch-text text="Store"></app-glitch-text></h1>
-            <span class="game-count">{{ filteredGames.length }} games</span>
-        </div>
+  <!-- Header -->
+  <div class="store-header">
+    <div class="store-title">
+      <h1><app-glitch-text text="Store"></app-glitch-text></h1>
+      <span class="game-count">{{ filteredGames.length }} games</span>
+    </div>
 
-        <!-- Filters -->
-        <div class="filters">
-            <div class="search-wrapper">
-                <span class="search-icon">🔍</span>
-                <input type="text" class="search-input" placeholder="Search games..." [(ngModel)]="searchQuery"
-                    (ngModelChange)="applyFilters()">
+    <!-- Filters -->
+    <div class="filters">
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" placeholder="Search games..." [(ngModel)]="searchQuery"
+          (ngModelChange)="applyFilters()">
+      </div>
+
+      <select class="genre-select" [(ngModel)]="selectedGenre" (ngModelChange)="applyFilters()">
+        <option value="">All genres</option>
+        @for (genre of genres; track genre) {
+          <option [value]="genre">{{ genre }}</option>
+        }
+      </select>
+
+      @if (searchQuery || selectedGenre) {
+        <button class="clear-btn" (click)="clearFilters()">
+          ✕ Clear
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (isLoading) {
+    <div class="store-loading">
+      <div class="loading-spinner"></div>
+      <span>Loading store...</span>
+    </div>
+  }
+
+  <!-- Empty search result -->
+  @if (!isLoading && filteredGames.length === 0) {
+    <div class="store-empty">
+      <div class="empty-icon">🎮</div>
+      <p>No games found with those filters.</p>
+      <button class="clear-btn" (click)="clearFilters()">Clear filters</button>
+    </div>
+  }
+
+  <!-- Game grid -->
+  @if (!isLoading && filteredGames.length > 0) {
+    <div class="games-grid">
+      @for (game of filteredGames; track game.id) {
+        <a [routerLink]="['/game', game.id]" class="game-card">
+          <div class="card-cover-wrapper">
+            <img [src]="game.coverUrl" [alt]="game.title" class="card-cover"
+              onerror="this.src='https://placehold.co/200x280/131313/00ffff?text=?'">
+              <!-- Discount badge -->
+              @if (hasDiscount(game)) {
+                <span class="discount-badge">-{{ game.discount }}%</span>
+              }
+              <div class="card-overlay">
+                <span class="view-label">View details →</span>
+              </div>
             </div>
-
-            <select class="genre-select" [(ngModel)]="selectedGenre" (ngModelChange)="applyFilters()">
-                <option value="">All genres</option>
-                <option *ngFor="let genre of genres" [value]="genre">{{ genre }}</option>
-            </select>
-
-            <button *ngIf="searchQuery || selectedGenre" class="clear-btn" (click)="clearFilters()">
-                ✕ Clear
-            </button>
-        </div>
-    </div>
-
-    <!-- Loading -->
-    <div *ngIf="isLoading" class="store-loading">
-        <div class="loading-spinner"></div>
-        <span>Loading store...</span>
-    </div>
-
-    <!-- Empty search result -->
-    <div *ngIf="!isLoading && filteredGames.length === 0" class="store-empty">
-        <div class="empty-icon">🎮</div>
-        <p>No games found with those filters.</p>
-        <button class="clear-btn" (click)="clearFilters()">Clear filters</button>
-    </div>
-
-    <!-- Game grid -->
-    <div *ngIf="!isLoading && filteredGames.length > 0" class="games-grid">
-        <a *ngFor="let game of filteredGames" [routerLink]="['/game', game.id]" class="game-card">
-
-            <div class="card-cover-wrapper">
-                <img [src]="game.coverUrl" [alt]="game.title" class="card-cover"
-                    onerror="this.src='https://placehold.co/200x280/131313/00ffff?text=?'">
-                <!-- Discount badge -->
-                <span *ngIf="hasDiscount(game)" class="discount-badge">-{{ game.discount }}%</span>
-                <div class="card-overlay">
-                    <span class="view-label">View details →</span>
-                </div>
-            </div>
-
             <div class="card-body">
-                <div class="card-genre">{{ game.genre }}</div>
-                <div class="card-title">{{ game.title }}</div>
-                <div class="card-developer">{{ game.developer }}</div>
-                <div class="card-footer">
-                    <span class="card-year">{{ game.releaseYear }}</span>
-                    <div class="card-price-block">
-                        <span *ngIf="hasDiscount(game)" class="price-original">{{ formatPrice(game.price) }}</span>
-                        <span class="card-price" [class.discounted]="hasDiscount(game)">{{ finalPrice(game) }}</span>
-                    </div>
+              <div class="card-genre">{{ game.genre }}</div>
+              <div class="card-title">{{ game.title }}</div>
+              <div class="card-developer">{{ game.developer }}</div>
+              <div class="card-footer">
+                <span class="card-year">{{ game.releaseYear }}</span>
+                <div class="card-price-block">
+                  @if (hasDiscount(game)) {
+                    <span class="price-original">{{ formatPrice(game.price) }}</span>
+                  }
+                  <span class="card-price" [class.discounted]="hasDiscount(game)">{{ finalPrice(game) }}</span>
                 </div>
+              </div>
             </div>
-
-        </a>
-    </div>
+          </a>
+        }
+      </div>
+    }
 
     <!-- Pagination -->
-    <div *ngIf="!isLoading && pagination && pagination.last_page > 1" class="pagination-controls">
+    @if (!isLoading && pagination && pagination.last_page > 1) {
+      <div class="pagination-controls">
         <button class="pager-btn" [disabled]="currentPage === 1" (click)="loadPage(currentPage - 1)">
-            ← Previous
+          ← Previous
         </button>
-
         <div class="page-numbers">
-            <button *ngFor="let p of [].constructor(pagination.last_page); let i = index" class="page-num"
-                [class.active]="(i + 1) === currentPage" (click)="loadPage(i + 1)">
-                {{ i + 1 }}
-            </button>
-        </div>
-
-        <button class="pager-btn" [disabled]="currentPage === pagination.last_page" (click)="loadPage(currentPage + 1)">
-            Next →
-        </button>
+          @for (p of [].constructor(pagination.last_page); track $index; let i = $index) {
+            <button class="page-num"
+              [class.active]="(i + 1) === currentPage" (click)="loadPage(i + 1)">
+            {{ i + 1 }}
+          </button>
+        }
+      </div>
+      <button class="pager-btn" [disabled]="currentPage === pagination.last_page" (click)="loadPage(currentPage + 1)">
+        Next →
+      </button>
     </div>
+  }
 
 </div>

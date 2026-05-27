@@ -1,7 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { GameService } from '../../services/game.service';
 import { User, Game } from '../../models/user.model';
@@ -12,7 +11,7 @@ import { NavbarComponent } from '../shared/navbar/navbar.component';
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, GlitchTextComponent, CyberButtonComponent, NavbarComponent],
+  imports: [FormsModule, RouterLink, GlitchTextComponent, CyberButtonComponent, NavbarComponent],
   templateUrl: './profile.html',
   styleUrl: './profile.sass',
 })
@@ -25,6 +24,7 @@ export class ProfileComponent implements OnInit {
 
   purchasedGames: Game[] = [];
   private libraryLoaded = false;
+  selectedFile: File | null = null;
 
   editData = {
     displayName: '',
@@ -32,11 +32,11 @@ export class ProfileComponent implements OnInit {
     profilePicture: ''
   };
 
-
   constructor(
     private authService: AuthService,
     private gameService: GameService,
     private router: Router,
+    private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
   ) { }
 
@@ -45,7 +45,7 @@ export class ProfileComponent implements OnInit {
       this.currentUser = u;
       if (u) {
         this.editData = {
-          displayName: u.displayName || u.username,
+          displayName: u.displayName || u.username || '',
           bio: u.bio || '',
           profilePicture: u.profilePicture || ''
         };
@@ -57,12 +57,32 @@ export class ProfileComponent implements OnInit {
         this.router.navigate(['/login']);
       }
     });
+
+    this.authService.fetchProfile().catch(err => console.error(err));
+
+    // Handle payment feedback from Stripe redirect
+    const paymentStatus = this.route.snapshot.queryParamMap.get('payment');
+    if (paymentStatus === 'success') {
+      this.showMessage('Purchase successful! The game has been added to your library.', 'success');
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { payment: null },
+        queryParamsHandling: 'merge'
+      });
+    } else if (paymentStatus === 'cancel') {
+      this.showMessage('Purchase was cancelled.', 'error');
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { payment: null },
+        queryParamsHandling: 'merge'
+      });
+    }
   }
 
   private async loadLibrary() {
     if (!this.currentUser?.id) return;
     try {
-      this.purchasedGames = await this.gameService.getLibrary(this.currentUser.id);
+      this.purchasedGames = await this.gameService.getLibrary();
     } catch (e) {
       console.error('Error loading library:', e);
       this.purchasedGames = [];
@@ -88,9 +108,10 @@ export class ProfileComponent implements OnInit {
   toggleEditMode() {
     this.isEditMode = !this.isEditMode;
     this.message = '';
+    this.selectedFile = null;
     if (this.isEditMode && this.currentUser) {
       this.editData = {
-        displayName: this.currentUser.displayName || this.currentUser.username,
+        displayName: this.currentUser.displayName || this.currentUser.username || '',
         bio: this.currentUser.bio || '',
         profilePicture: this.currentUser.profilePicture || ''
       };
@@ -112,6 +133,8 @@ export class ProfileComponent implements OnInit {
         return;
       }
 
+      this.selectedFile = file;
+
       const reader = new FileReader();
       reader.onload = (e) => {
         this.editData.profilePicture = e.target?.result as string;
@@ -130,12 +153,13 @@ export class ProfileComponent implements OnInit {
       const result = await this.authService.updateProfile({
         displayName: this.editData.displayName,
         bio: this.editData.bio,
-        profilePicture: this.editData.profilePicture
+        profilePicture: this.selectedFile || this.editData.profilePicture
       });
 
       if (result.success) {
         this.showMessage(result.message, 'success');
         this.isEditMode = false;
+        this.selectedFile = null;
       } else {
         this.showMessage(result.message, 'error');
       }
@@ -150,9 +174,10 @@ export class ProfileComponent implements OnInit {
   cancelEdit() {
     this.isEditMode = false;
     this.message = '';
+    this.selectedFile = null;
     if (this.currentUser) {
       this.editData = {
-        displayName: this.currentUser.displayName || this.currentUser.username,
+        displayName: this.currentUser.displayName || this.currentUser.username || '',
         bio: this.currentUser.bio || '',
         profilePicture: this.currentUser.profilePicture || ''
       };
@@ -176,6 +201,7 @@ export class ProfileComponent implements OnInit {
   }
 
   private getDefaultAvatar(): string {
-    return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%2300ffff' width='200' height='200'/%3E%3Ctext fill='%23131313' font-size='100' font-family='Arial' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3E${this.currentUser?.username.charAt(0).toUpperCase() || 'U'}%3C/text%3E%3C/svg%3E`;
+    const char = (this.currentUser?.username || 'U').charAt(0).toUpperCase();
+    return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%2300ffff' width='200' height='200'/%3E%3Ctext fill='%23131313' font-size='100' font-family='Arial' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3E${char}%3C/text%3E%3C/svg%3E`;
   }
 }

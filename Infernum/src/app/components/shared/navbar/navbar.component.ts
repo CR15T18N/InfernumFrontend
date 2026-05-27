@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { GlitchTextComponent } from '../glitch-text/glitch-text.component';
 import { AuthService } from '../../../services/auth.service';
@@ -7,7 +7,7 @@ import { AuthService } from '../../../services/auth.service';
 @Component({
     selector: 'app-navbar',
     standalone: true,
-    imports: [CommonModule, RouterLink, RouterLinkActive, GlitchTextComponent],
+    imports: [RouterLink, RouterLinkActive, GlitchTextComponent],
     templateUrl: './navbar.component.html',
     styleUrl: './navbar.component.sass'
 })

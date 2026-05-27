@@ -26,11 +26,14 @@ export interface RegisterData {
 export interface Game {
   id?: number;
   title: string;
-  genre: string;
+  genre: string; // Primary genre
+  allGenres?: string[]; // All associated genres
   coverUrl: string;
+  images?: { id: number, url: string, type: string }[];
   price: number;
   discount?: number;   // percentage
   description: string;
+  longDescription?: string;
   releaseYear: number;
   developer: string;
   finalPrice?: number;

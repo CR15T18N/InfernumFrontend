@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -8,7 +8,7 @@ import { GlitchTextComponent } from '../shared/glitch-text/glitch-text.component
 
 @Component({
     selector: 'app-register',
-    imports: [CommonModule, ReactiveFormsModule, RouterModule, CyberButtonComponent, GlitchTextComponent],
+    imports: [ReactiveFormsModule, RouterModule, CyberButtonComponent, GlitchTextComponent],
     templateUrl: './register.component.html',
     styleUrl: './register.component.sass'
 })
@@ -20,7 +20,8 @@ export class RegisterComponent implements OnInit {
     constructor(
         private fb: FormBuilder,
         private authService: AuthService,
-        public router: Router
+        public router: Router,
+        private cdr: ChangeDetectorRef
     ) { }
 
     ngOnInit(): void {
@@ -66,6 +67,8 @@ export class RegisterComponent implements OnInit {
         } else {
             this.errorMessage = result.message;
         }
+
+        this.cdr.detectChanges();
     }
 
     get username() {

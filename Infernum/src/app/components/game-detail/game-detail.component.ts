@@ -1,8 +1,9 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { GameService } from '../../services/game.service';
+import { CartService } from '../../services/cart.service';
 import { Game } from '../../models/user.model';
 import { NavbarComponent } from '../shared/navbar/navbar.component';
 import { GlitchTextComponent } from '../shared/glitch-text/glitch-text.component';
@@ -11,7 +12,7 @@ import { CyberButtonComponent } from '../shared/cyber-button/cyber-button.compon
 @Component({
     selector: 'app-game-detail',
     standalone: true,
-    imports: [CommonModule, NavbarComponent, GlitchTextComponent, CyberButtonComponent],
+    imports: [NavbarComponent, GlitchTextComponent, CyberButtonComponent],
     templateUrl: './game-detail.component.html',
     styleUrl: './game-detail.component.sass',
 })
@@ -22,11 +23,13 @@ export class GameDetailComponent implements OnInit {
     purchaseMessage = '';
     purchaseMessageType: 'success' | 'error' = 'success';
     isLoading = true;
+    activeImageIndex = 0;
 
     constructor(
         private route: ActivatedRoute,
         private router: Router,
         private gameService: GameService,
+        private cartService: CartService,
         private authService: AuthService,
         private cdr: ChangeDetectorRef
     ) { }
@@ -46,7 +49,7 @@ export class GameDetailComponent implements OnInit {
 
             const user = this.authService.currentUserValue;
             if (user?.id && this.game.id != null) {
-                this.isOwned = await this.gameService.hasPurchased(user.id, this.game.id);
+                this.isOwned = await this.gameService.hasPurchased(this.game.id);
             }
         } catch (e) {
             console.error('Error loading game detail:', e);
@@ -62,17 +65,24 @@ export class GameDetailComponent implements OnInit {
         if (!this.game?.id) return;
 
         this.isPurchasing = true;
+        this.purchaseMessage = '';
         try {
-            const ok = await this.gameService.purchaseGame(user.id, this.game.id);
-            if (ok) {
-                this.isOwned = true;
-                this.purchaseMessage = 'Game added to your library!';
-                this.purchaseMessageType = 'success';
-            } else {
-                this.purchaseMessage = 'Error processing the purchase.';
+            const cartResult = await this.cartService.addToCart(this.game.id);
+            if (!cartResult.success) {
+                this.purchaseMessage = cartResult.message || 'Could not add to cart.';
                 this.purchaseMessageType = 'error';
+                setTimeout(() => (this.purchaseMessage = ''), 5000);
+                return;
             }
-            setTimeout(() => (this.purchaseMessage = ''), 5000);
+
+            const checkoutResult = await this.cartService.checkout(cartResult.cartId!);
+            if (checkoutResult.success && checkoutResult.url) {
+                window.location.href = checkoutResult.url;
+            } else {
+                this.purchaseMessage = checkoutResult.message || 'Could not start checkout.';
+                this.purchaseMessageType = 'error';
+                setTimeout(() => (this.purchaseMessage = ''), 5000);
+            }
         } catch {
             this.purchaseMessage = 'Error processing the purchase.';
             this.purchaseMessageType = 'error';
@@ -84,6 +94,31 @@ export class GameDetailComponent implements OnInit {
     }
 
     goBack() { history.back(); }
+
+    setActiveImage(index: number) {
+        this.activeImageIndex = index;
+    }
+
+    nextImage() {
+        if (!this.game?.images?.length) return;
+        this.activeImageIndex = (this.activeImageIndex + 1) % this.game.images.length;
+    }
+
+    prevImage() {
+        if (!this.game?.images?.length) return;
+        this.activeImageIndex = (this.activeImageIndex - 1 + this.game.images.length) % this.game.images.length;
+    }
+
+    getActiveImageUrl(): string {
+        if (this.game?.images && this.game.images.length > this.activeImageIndex) {
+            return this.game.images[this.activeImageIndex].url;
+        }
+        return this.game?.coverUrl || 'https://placehold.co/800x450/131313/00ffff?text=?';
+    }
+
+    getThumbUrl(img: any): string {
+        return img.url;
+    }
 
     formatPrice(price: number) {
         return price === 0 ? 'Free' : `${price.toFixed(2)} €`;

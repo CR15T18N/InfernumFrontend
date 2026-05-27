@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
-import { tap, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { User, LoginCredentials, RegisterData, BackendUser } from '../models/user.model';
 
@@ -39,62 +38,79 @@ export class AuthService {
         this.userSubject.next(user);
     }
 
-    private mapBackendUser(bu: BackendUser): User {
-        return {
-            id: bu.id,
-            username: bu.nickname,
-            email: bu.email,
-            role: bu.role,
-            createdAt: bu.created_at ? new Date(bu.created_at) : new Date()
-        };
-    }
-
     async register(data: RegisterData): Promise<{ success: boolean; message: string; user?: User }> {
         try {
-            // Laravel expects 'nickname' instead of 'username' usually, or whatever UserController.php says
-            // Controller.php line 101 says $request->validated(). Let me check UserRegisterRequest.
-            // Actually I'll use what the component sends and map if needed.
-            // Looking at UserController.php: $user = User::create($data);
-            const body = {
-                nickname: data.username,
-                email: data.email,
-                password: data.password,
-                password_confirmation: data.password // Assuming standard Laravel validation
-            };
-
-            const response = await firstValueFrom(
-                this.http.post<{ status: string, created_user: BackendUser, token: string }>(`${this.apiUrl}/register`, body)
+            const res = await firstValueFrom(
+                this.http.post<{ status: string, created_user: BackendUser, token: string }>(`${this.apiUrl}/register`, {
+                    nickname: data.username,
+                    email: data.email,
+                    password: data.password,
+                    password_confirmation: data.password
+                })
             );
 
-            if (response.status === 'Successfull') {
-                const user = this.mapBackendUser(response.created_user);
-                this.saveSession(user, response.token);
-                return { success: true, message: 'Registration successful', user };
+            if (res.status === 'Successfull') {
+                const u = res.created_user;
+                const user: User = { 
+                    id: u.id, 
+                    username: u.nickname || data.username, 
+                    email: u.email, 
+                    role: u.role, 
+                    createdAt: u.created_at ? new Date(u.created_at) : new Date() 
+                };
+                this.saveSession(user, res.token);
+                return { success: true, message: '', user };
             }
             return { success: false, message: 'Error creating user' };
         } catch (err: any) {
             console.error(err);
-            const msg = err.error?.message || 'Registration error';
+            let msg = err.error?.message || 'Registration error';
+            if (err.error?.errors) {
+                const key = Object.keys(err.error.errors)[0];
+                if (key && err.error.errors[key].length > 0) msg = err.error.errors[key][0];
+            }
             return { success: false, message: msg };
         }
     }
 
     async login(credentials: LoginCredentials): Promise<{ success: boolean; message: string; user?: User }> {
         try {
-            const response = await firstValueFrom(
+            const res = await firstValueFrom(
                 this.http.post<{ status: string, user: BackendUser, token: string }>(`${this.apiUrl}/login`, credentials)
             );
 
-            if (response.status === 'Successfull') {
-                const user = this.mapBackendUser(response.user);
-                this.saveSession(user, response.token);
-                return { success: true, message: 'Login successful', user };
+            if (res.status === 'Successfull') {
+                const u = res.user;
+                
+                // Save token first so the subsequent API call to fetch raw user details is authorized
+                localStorage.setItem('infernum_token', res.token);
+
+                let nickname = u.nickname;
+                try {
+                    const rawUserRes = await firstValueFrom(
+                        this.http.get<{ status: string, user: any }>(`${this.apiUrl}/user`)
+                    );
+                    if (rawUserRes.status === 'Succesfull' && rawUserRes.user) {
+                        nickname = rawUserRes.user.nickname;
+                    }
+                } catch (err) {
+                    console.error('Error fetching raw user details in login:', err);
+                }
+
+                const user: User = { 
+                    id: u.id, 
+                    username: nickname || u.email.split('@')[0] || 'User', 
+                    email: u.email, 
+                    role: u.role, 
+                    createdAt: u.created_at ? new Date(u.created_at) : new Date() 
+                };
+                this.saveSession(user, res.token);
+                return { success: true, message: '', user };
             }
             return { success: false, message: 'Invalid credentials' };
         } catch (err: any) {
             console.error(err);
-            const msg = err.status === 401 ? 'Invalid credentials' : 'Login error';
-            return { success: false, message: msg };
+            return { success: false, message: err.status === 401 ? 'Invalid credentials' : 'Login error' };
         }
     }
 
@@ -106,33 +122,75 @@ export class AuthService {
         return !!localStorage.getItem('infernum_token');
     }
 
-    async updateProfile(data: Partial<User>): Promise<{ success: boolean; message: string }> {
-        const user = this.userSubject.value;
-        if (!user?.id) return { success: false, message: 'No authenticated user' };
-
+    async fetchProfile(): Promise<void> {
+        if (!this.isAuthenticated()) return;
         try {
-            // Mapping back to backend if necessary
-            const body = {
-                nickname: data.username || user.username,
-                // bio, profilePicture etc might need backend support which isn't there yet
-                // UserController only has login/register/getUserAuthenticated
-            };
+            const res = await firstValueFrom(
+                this.http.get<{ status: string, data: any }>(`${this.apiUrl}/profile/show`)
+            );
+            const user = this.userSubject.value;
+            if ((res.status === 'Succesful' || res.status === 'Succesfull') && res.data && user) {
+                let nickname = user.username;
+                if (!nickname) {
+                    try {
+                        const rawUserRes = await firstValueFrom(
+                            this.http.get<{ status: string, user: any }>(`${this.apiUrl}/user`)
+                        );
+                        if (rawUserRes.status === 'Succesfull' && rawUserRes.user) {
+                            nickname = rawUserRes.user.nickname;
+                        }
+                    } catch (err) {
+                        console.error('Error fetching raw user details in fetchProfile:', err);
+                    }
+                }
 
-            // Assuming there's a profile update route we didn't see or we use user authenticated
-            // For now, let's pretend it works or just update locally if the backend doesn't support it
-            // Based on routes/api.php, there is NO update route.
-
-            // To fulfill the request "only change frontend", I should probably just update locally
-            // or warn that profile saving needs backend work. 
-            // BUT the user said "fuse frontend and backend".
-
-            // I'll update the local state since backend lacks the endpoint.
-            const updated = { ...user, ...data };
-            this.saveSession(updated);
-            return { success: true, message: 'Profile updated locally (Backend support pending)' };
+                const base = this.apiUrl.replace('/api/v1', '');
+                const profile = res.data.profile;
+                const pic = profile?.profile_picture ? `${base}/${profile.profile_picture}` : undefined;
+                this.saveSession({ 
+                    ...user, 
+                    username: nickname || user.email?.split('@')[0] || 'User',
+                    displayName: profile?.display_name || user.displayName || nickname || 'User', 
+                    bio: profile?.bio || '', 
+                    profilePicture: pic 
+                });
+            }
         } catch (err) {
             console.error(err);
+        }
+    }
+
+    async updateProfile(data: { displayName?: string; bio?: string; profilePicture?: File | string }): Promise<{ success: boolean; message: string }> {
+        const user = this.userSubject.value;
+        if (!user?.id) return { success: false, message: 'Not authenticated' };
+
+        try {
+            const form = new FormData();
+            form.append('_method', 'PUT');
+            if (data.displayName) form.append('display_name', data.displayName);
+            if (data.bio) form.append('bio', data.bio);
+            if (data.profilePicture instanceof File) form.append('profile_picture', data.profilePicture);
+
+            const res = await firstValueFrom(
+                this.http.post<{ status: string, profile: any }>(`${this.apiUrl}/profile/update`, form)
+            );
+
+            if (res.status === 'Succesful') {
+                const base = this.apiUrl.replace('/api/v1', '');
+                const pic = res.profile.profile_picture ? `${base}/${res.profile.profile_picture}` : undefined;
+                const token = localStorage.getItem('infernum_token') || undefined;
+                this.saveSession({ ...user, displayName: res.profile.display_name, bio: res.profile.bio, profilePicture: pic }, token);
+                return { success: true, message: 'Profile updated' };
+            }
             return { success: false, message: 'Error updating profile' };
+        } catch (err: any) {
+            console.error(err);
+            let msg = 'Error updating profile';
+            if (err.error?.errors) {
+                const key = Object.keys(err.error.errors)[0];
+                if (key && err.error.errors[key].length > 0) msg = err.error.errors[key][0];
+            }
+            return { success: false, message: msg };
         }
     }
 }
