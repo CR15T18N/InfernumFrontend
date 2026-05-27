@@ -2,38 +2,33 @@ FROM angular-base AS build
 
 WORKDIR /home/ubuntu/frontend-code/Infernum
 
-# Install angular CLI
 RUN npm install
-RUN npx ng build --configuration=production
 RUN npx ng build --configuration=production
 
 # Production server
 FROM ubuntu:22.04 AS production
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update && \
-    apt-get install -y apache2 && \
+    apt-get install -y apache2 libapache2-mod-security2 modsecurity-crs curl && \
     rm -rf /var/lib/apt/lists/*
 
-RUN a2enmod ssl rewrite headers env mpm_prefork \
- && a2dismod autoindex negotiation
+RUN a2dismod mpm_event && \
+    a2enmod ssl rewrite headers env mpm_prefork security2 proxy proxy_http && \
+    a2dismod -f autoindex negotiation
 
+    # Crear usuario para Apache (sin sudo, ya somos root)
+RUN groupadd apache && \
+    useradd -r -d /var/www -s /usr/sbin/nologin -g apache apache-user
 
-COPY --from=build /home/ubuntu/frontend-code/Infernum/dist/Infernum/browser /usr/local/apache2/htdocs/
+COPY --from=build /home/ubuntu/frontend-code/Infernum/dist/Infernum/browser /var/www/html/
+
+COPY setup/utils/front.conf /etc/apache2/sites-available/000-default.conf
+COPY setup/utils/mpm_prefork.conf /etc/apache2/mods-available/mpm_prefork.conf
+COPY setup/utils/modsecurity.conf /etc/modsecurity/modsecurity.conf
 
 EXPOSE 80 443
 
-# Create a user and group for apache execution
-RUN sudo groupadd apache && sudo useradd -r -d /var/www -s /usr/sbin/nologin -g apache apache-user
-
-COPY setup/utils/front.conf /usr/local/apache2/conf/httpd.conf
-COPY setup/utils/mpm_prefork.conf /etc/apache2/mods-enabled/mpm_prefork.conf
-
-# Install mode_security
-
-RUN sudo apt install libapache2-mod-security2
-
-COPY setup/utils/modsecurity.conf /etc/modsecurity/modsecurity.conf
-
-RUN sudo systemctl restart apache2
-
-CMD ["sh", "-c", "apache2ctl start & tail -f /dev/null"]
+# Apache en foreground (sin systemctl, no hay systemd en Docker)
+CMD ["apache2ctl", "-D", "FOREGROUND"]

@@ -1,4 +1,4 @@
 #!/bin/bash
 
-rm -fr /home/ubuntu/InfernumFront/*
+rm -fr /home/ubuntu/frontend-code/*
 
