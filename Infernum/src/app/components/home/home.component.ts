@@ -137,39 +137,17 @@ export class HomeComponent implements OnInit, OnDestroy {
             return;
         }
         if (game.id == null) return;
-        if (this.buyState[game.id] === 'owned' || this.buyState[game.id] === 'buying') return;
+        if (this.buyState[game.id] === 'owned') return;
 
-        this.buyState[game.id] = 'buying';
-        this.cdr.detectChanges();
-
-        try {
-            const cartResult = await this.cartService.addToCart(game.id);
-            if (!cartResult.success) {
-                this.buyState[game.id] = 'error';
-                this.cdr.detectChanges();
-                return;
-            }
-
-            const checkoutResult = await this.cartService.checkout(cartResult.cartId!);
-            if (checkoutResult.success && checkoutResult.url) {
-                window.location.href = checkoutResult.url;
-            } else {
-                this.buyState[game.id] = 'error';
-            }
-        } catch {
-            this.buyState[game.id] = 'error';
-        }
+        this.cartService.addToLocalCart(game);
         this.cdr.detectChanges();
     }
 
     getBuyLabel(game: Game): string {
-        if (!game.id) return 'Buy';
-        switch (this.buyState[game.id]) {
-            case 'buying': return 'Processing…';
-            case 'owned': return '✓ In library';
-            case 'error': return 'Error — Retry';
-            default: return 'Buy';
-        }
+        if (!game.id) return 'Add to Cart';
+        if (this.buyState[game.id] === 'owned') return '✓ In library';
+        const inCart = this.cartService.cartItems().some(item => item.id === game.id);
+        return inCart ? '✓ Added' : 'Add to Cart';
     }
 
     isOwned(game: Game) {

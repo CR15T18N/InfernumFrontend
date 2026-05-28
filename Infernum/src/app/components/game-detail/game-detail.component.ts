@@ -64,33 +64,14 @@ export class GameDetailComponent implements OnInit {
         if (!user?.id) { this.router.navigate(['/login']); return; }
         if (!this.game?.id) return;
 
-        this.isPurchasing = true;
-        this.purchaseMessage = '';
-        try {
-            const cartResult = await this.cartService.addToCart(this.game.id);
-            if (!cartResult.success) {
-                this.purchaseMessage = cartResult.message || 'Could not add to cart.';
-                this.purchaseMessageType = 'error';
-                setTimeout(() => (this.purchaseMessage = ''), 5000);
-                return;
-            }
+        this.cartService.addToLocalCart(this.game);
+        this.cdr.detectChanges();
+    }
 
-            const checkoutResult = await this.cartService.checkout(cartResult.cartId!);
-            if (checkoutResult.success && checkoutResult.url) {
-                window.location.href = checkoutResult.url;
-            } else {
-                this.purchaseMessage = checkoutResult.message || 'Could not start checkout.';
-                this.purchaseMessageType = 'error';
-                setTimeout(() => (this.purchaseMessage = ''), 5000);
-            }
-        } catch {
-            this.purchaseMessage = 'Error processing the purchase.';
-            this.purchaseMessageType = 'error';
-            setTimeout(() => (this.purchaseMessage = ''), 5000);
-        } finally {
-            this.isPurchasing = false;
-            this.cdr.detectChanges();
-        }
+    getButtonLabel(): string {
+        if (!this.game) return 'ADD TO CART';
+        const inCart = this.cartService.cartItems().some(item => item.id === this.game?.id);
+        return inCart ? '✓ ADDED TO CART' : 'ADD TO CART';
     }
 
     goBack() { history.back(); }

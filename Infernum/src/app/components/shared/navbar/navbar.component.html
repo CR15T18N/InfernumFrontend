@@ -16,6 +16,16 @@
       </a>
     </li>
 
+    <li>
+      <button (click)="toggleCart()" class="cyber-link cart-toggle-btn">
+        <span class="icon">🛒</span>
+        <app-glitch-text text="Cart" class="label"></app-glitch-text>
+        @if (cartService.cartItems().length > 0) {
+          <span class="cart-badge">{{ cartService.cartItems().length }}</span>
+        }
+      </button>
+    </li>
+
     <!-- Only when logged in -->
     @if (isLoggedIn) {
       <li>
@@ -63,3 +73,63 @@
     }
   </div>
 </nav>
+
+@if (cartService.isCartOpen()) {
+  <div class="cart-overlay-backdrop" (click)="toggleCart()"></div>
+  <div class="cart-drawer">
+    <div class="cart-header">
+      <h3><app-glitch-text text="CART"></app-glitch-text></h3>
+      <button class="close-btn" (click)="toggleCart()">✕</button>
+    </div>
+    
+    <div class="cart-body">
+      @if (cartService.cartItems().length === 0) {
+        <div class="cart-empty">
+          <span class="empty-icon">🛒</span>
+          <p>Your cart is empty</p>
+        </div>
+      } @else {
+        <div class="cart-items-list">
+          @for (item of cartService.cartItems(); track item.id) {
+            <div class="cart-item">
+              <img [src]="item.coverUrl" class="item-img" onerror="this.src='https://placehold.co/60x80/131313/00ffff?text=?'">
+              <div class="item-details">
+                <span class="item-title">{{ item.title }}</span>
+                <span class="item-price">
+                  @if (item.discount && item.discount > 0) {
+                    <span class="price-orig">{{ item.price.toFixed(2) }} €</span>
+                    <span class="price-sale">{{ (item.price * (1 - item.discount / 100)).toFixed(2) }} €</span>
+                  } @else {
+                    {{ item.price === 0 ? 'Free' : item.price.toFixed(2) + ' €' }}
+                  }
+                </span>
+              </div>
+              <button class="remove-btn" (click)="removeFromCart(item.id)">✕</button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    @if (cartService.cartItems().length > 0) {
+      <div class="cart-footer">
+        <div class="total-row">
+          <span>TOTAL</span>
+          <span class="total-price">{{ getCartTotal().toFixed(2) }} €</span>
+        </div>
+        
+        @if (checkoutError) {
+          <div class="checkout-error">{{ checkoutError }}</div>
+        }
+
+        <button class="checkout-btn" [disabled]="isCheckingOut" (click)="checkout()">
+          @if (isCheckingOut) {
+            PROCESSING...
+          } @else {
+            CHECKOUT
+          }
+        </button>
+      </div>
+    }
+  </div>
+}

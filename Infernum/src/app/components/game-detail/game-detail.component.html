@@ -77,8 +77,7 @@
             </div>
             <div class="purchase-actions">
               @if (!isOwned) {
-                <app-cyber-button [label]="isPurchasing ? 'BUYING...' : 'ADD TO CART'"
-                  [disabled]="isPurchasing" (clicked)="purchase()">
+                <app-cyber-button [label]="getButtonLabel()" (clicked)="purchase()">
                 </app-cyber-button>
               }
               @if (isOwned) {

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -9,7 +9,47 @@ import { environment } from '../../environments/environment';
 export class CartService {
     private apiUrl = environment.apiUrl;
 
+    cartItems = signal<any[]>(this.loadCartFromStorage());
+    isCartOpen = signal<boolean>(false);
+
     constructor(private http: HttpClient) {}
+
+    private loadCartFromStorage(): any[] {
+        try {
+            const data = localStorage.getItem('infernum_cart');
+            return data ? JSON.parse(data) : [];
+        } catch {
+            return [];
+        }
+    }
+
+    private saveCartToStorage(items: any[]) {
+        localStorage.setItem('infernum_cart', JSON.stringify(items));
+        this.cartItems.set(items);
+    }
+
+    addToLocalCart(game: any) {
+        const current = this.loadCartFromStorage();
+        if (!current.some(item => item.id === game.id)) {
+            current.push(game);
+            this.saveCartToStorage(current);
+        }
+        this.isCartOpen.set(true);
+    }
+
+    removeFromLocalCart(gameId: number) {
+        const current = this.loadCartFromStorage();
+        const filtered = current.filter(item => item.id !== gameId);
+        this.saveCartToStorage(filtered);
+    }
+
+    clearLocalCart() {
+        this.saveCartToStorage([]);
+    }
+
+    getLocalCart(): any[] {
+        return this.cartItems();
+    }
 
     async getCart(): Promise<any> {
         try {
