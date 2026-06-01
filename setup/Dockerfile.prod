@@ -3,12 +3,12 @@ FROM angular-base AS build
 WORKDIR /home/ubuntu/frontend-code/Infernum
 
 RUN npm install
-RUN npx ng build --configuration=production
 RUN npm install @fortawesome/free-solid-svg-icons
 RUN npm install @fortawesome/angular-fontawesome
 RUN npm install --legacy-peer-deps
 RUN npm install @fortawesome/angular-fontawesome --legacy-peer-deps
 
+RUN npx ng build --configuration=production
 # Production server
 FROM ubuntu:22.04 AS production
 
