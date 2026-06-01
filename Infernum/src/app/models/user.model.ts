@@ -29,14 +29,24 @@ export interface Game {
   genre: string; // Primary genre
   allGenres?: string[]; // All associated genres
   coverUrl: string;
-  images?: { id: number, url: string, type: string }[];
+  images?: { id: number; url: string; type: string }[];
   price: number;
-  discount?: number;   // percentage
+  discount?: number; // percentage
   description: string;
   longDescription?: string;
   releaseYear: number;
   developer: string;
   finalPrice?: number;
+  requirements: Requirement[] | null;
+}
+
+export interface Requirement {
+  id: number;
+  type: 'miminum' | 'recommended';
+  os: string;
+  ram: string;
+  gpu: string;
+  storage: string;
 }
 
 export interface Purchase {
@@ -62,9 +72,10 @@ export interface BackendGame {
   long_description?: string;
   price: number;
   final_price: number;
-  genres?: { id: number, type: string }[];
-  images?: { id: number, url: string, type: string }[];
+  genres?: { id: number; type: string }[];
+  images?: { id: number; url: string; type: string }[];
   discount?: { percentage: number };
+  requirements?: Requirement[] | null;
 }
 
 export interface PaginationInfo {

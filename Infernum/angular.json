@@ -26,9 +26,7 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.sass"
-            ]
+            "styles": ["src/styles.sass"]
           },
           "configurations": {
             "production": {
@@ -62,6 +60,9 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          },
           "configurations": {
             "production": {
               "buildTarget": "Infernum:build:production"
@@ -86,9 +87,7 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.sass"
-            ]
+            "styles": ["src/styles.sass"]
           }
         }
       }

@@ -15,8 +15,14 @@
           <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
             <div class="form-group">
               <label for="username">Username</label>
-              <input type="text" id="username" formControlName="username" class="cyber-input"
-                [class.error]="username?.invalid && username?.touched" placeholder="Usuario">
+              <input
+                type="text"
+                id="username"
+                formControlName="username"
+                class="cyber-input"
+                [class.error]="username?.invalid && username?.touched"
+                placeholder="Usuario"
+              />
               @if (username?.invalid && username?.touched) {
                 <div class="error-message">
                   @if (username?.errors?.['required']) {
@@ -31,8 +37,14 @@
 
             <div class="form-group">
               <label for="email">Email</label>
-              <input type="email" id="email" formControlName="email" class="cyber-input"
-                [class.error]="email?.invalid && email?.touched" placeholder="tu@email.com">
+              <input
+                type="email"
+                id="email"
+                formControlName="email"
+                class="cyber-input"
+                [class.error]="email?.invalid && email?.touched"
+                placeholder="tu@email.com"
+              />
               @if (email?.invalid && email?.touched) {
                 <div class="error-message">
                   @if (email?.errors?.['required']) {
@@ -47,8 +59,14 @@
 
             <div class="form-group">
               <label for="password">Password</label>
-              <input type="password" id="password" formControlName="password" class="cyber-input"
-                [class.error]="password?.invalid && password?.touched" placeholder="••••••••">
+              <input
+                type="password"
+                id="password"
+                formControlName="password"
+                class="cyber-input"
+                [class.error]="password?.invalid && password?.touched"
+                placeholder="••••••••"
+              />
               @if (password?.invalid && password?.touched) {
                 <div class="error-message">
                   @if (password?.errors?.['required']) {
@@ -63,10 +81,16 @@
 
             <div class="form-group">
               <label for="confirmPassword">Confirm Password</label>
-              <input type="password" id="confirmPassword" formControlName="confirmPassword"
+              <input
+                type="password"
+                id="confirmPassword"
+                formControlName="confirmPassword"
                 class="cyber-input"
-                [class.error]="(confirmPassword?.invalid && confirmPassword?.touched) || passwordMismatch"
-                placeholder="••••••••">
+                [class.error]="
+                  (confirmPassword?.invalid && confirmPassword?.touched) || passwordMismatch
+                "
+                placeholder="••••••••"
+              />
               @if (confirmPassword?.invalid && confirmPassword?.touched) {
                 <div class="error-message">
                   @if (confirmPassword?.errors?.['required']) {
@@ -75,9 +99,7 @@
                 </div>
               }
               @if (passwordMismatch) {
-                <div class="error-message">
-                  Passwords do not match
-                </div>
+                <div class="error-message">Passwords do not match</div>
               }
             </div>
 
@@ -88,8 +110,12 @@
             }
 
             <div class="modal__actions">
-              <app-cyber-button label="Back" kbd="←" type="button"
-                (clicked)="router.navigate(['/login'])">
+              <app-cyber-button
+                label="Back"
+                kbd="←"
+                type="button"
+                (clicked)="router.navigate(['/login'])"
+              >
               </app-cyber-button>
 
               <app-cyber-button label="Register" kbd="↵" type="submit" [disabled]="isLoading">

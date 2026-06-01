@@ -4,6 +4,9 @@ WORKDIR /home/ubuntu/frontend-code/Infernum
 
 RUN npm install
 RUN npx ng build --configuration=production
+RUN npm install @fortawesome/free-solid-svg-icons
+RUN npm install @fortawesome/angular-fontawesome
+RUN npm install @fortawesome/angular-fontawesome --legacy-peer-deps
 
 # Production server
 FROM ubuntu:22.04 AS production
@@ -11,16 +14,16 @@ FROM ubuntu:22.04 AS production
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
-    apt-get install -y apache2 libapache2-mod-security2 modsecurity-crs curl && \
-    rm -rf /var/lib/apt/lists/*
+  apt-get install -y apache2 libapache2-mod-security2 modsecurity-crs curl && \
+  rm -rf /var/lib/apt/lists/*
 
 RUN a2dismod mpm_event && \
-    a2enmod ssl rewrite headers env mpm_prefork security2 proxy proxy_http && \
-    a2dismod -f autoindex negotiation
+  a2enmod ssl rewrite headers env mpm_prefork security2 proxy proxy_http && \
+  a2dismod -f autoindex negotiation
 
-    # Crear usuario para Apache (sin sudo, ya somos root)
+# Crear usuario para Apache (sin sudo, ya somos root)
 RUN groupadd apache && \
-    useradd -r -d /var/www -s /usr/sbin/nologin -g apache apache-user
+  useradd -r -d /var/www -s /usr/sbin/nologin -g apache apache-user
 
 COPY --from=build /home/ubuntu/frontend-code/Infernum/dist/Infernum/browser /var/www/html/
 

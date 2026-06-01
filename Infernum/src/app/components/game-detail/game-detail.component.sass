@@ -132,7 +132,7 @@
 
   &::-webkit-scrollbar
     height: 4px
-  
+
   &::-webkit-scrollbar-thumb
     background: var(--accent)
 
@@ -148,7 +148,7 @@
 
   &:hover
     opacity: 0.8
-  
+
   &.active
     opacity: 1
     border-color: var(--accent)
@@ -190,7 +190,7 @@
   line-height: 1.8
   color: color-mix(in lch, var(--accent), transparent 10%)
   margin-top: 1.5rem
-  
+
   p
     margin-bottom: 1rem
 
@@ -232,8 +232,12 @@
   background: linear-gradient(to right, color-mix(in lch, var(--accent), transparent 92%), color-mix(in lch, var(--accent), transparent 96%))
   border: 1px solid color-mix(in lch, var(--accent), transparent 80%)
   display: flex
-  flex-direction: column
   gap: 1.25rem
+  justify-content: space-between
+
+  .purchase-actions
+    width: 100px
+
 
 .price-row
   display: flex
