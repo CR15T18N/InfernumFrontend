@@ -6,6 +6,7 @@ RUN npm install
 RUN npx ng build --configuration=production
 RUN npm install @fortawesome/free-solid-svg-icons
 RUN npm install @fortawesome/angular-fontawesome
+RUN npm install --legacy-peer-deps
 RUN npm install @fortawesome/angular-fontawesome --legacy-peer-deps
 
 # Production server
