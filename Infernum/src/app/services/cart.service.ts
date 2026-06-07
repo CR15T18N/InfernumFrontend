@@ -88,10 +88,10 @@ export class CartService {
         }
     }
 
-    async verifyPayment(sessionId: string): Promise<{ success: boolean; message: string }> {
+    async verifyPayment(checkoutId: string): Promise<{ success: boolean; message: string }> {
         try {
             const res = await firstValueFrom(
-                this.http.post<{ status: string; message: string }>(`${this.apiUrl}/payments/verify`, { session_id: sessionId })
+                this.http.post<{ status: string; message: string }>(`${this.apiUrl}/payments/verify`, { checkout_id: checkoutId })
             );
             return { success: res.status === 'Success', message: res.message };
         } catch (err: any) {
@@ -99,4 +99,3 @@ export class CartService {
         }
     }
 }
-    

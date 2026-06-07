@@ -64,10 +64,10 @@ export class ProfileComponent implements OnInit {
 
     // Handle payment feedback from Stripe redirect
     const paymentStatus = this.route.snapshot.queryParamMap.get('payment');
-    const sessionId = this.route.snapshot.queryParamMap.get('session_id');
+    const checkoutId = this.route.snapshot.queryParamMap.get('checkout_id');
     if (paymentStatus === 'success') {
-      if (sessionId) {
-        this.cartService.verifyPayment(sessionId).then(res => {
+      if (checkoutId) {
+        this.cartService.verifyPayment(checkoutId).then(res => {
           if (res.success) {
             this.showMessage('Purchase successful! The game has been added to your library.', 'success');
           } else {
@@ -84,14 +84,14 @@ export class ProfileComponent implements OnInit {
       }
       this.router.navigate([], {
         relativeTo: this.route,
-        queryParams: { payment: null, session_id: null },
+        queryParams: { payment: null, checkout_id: null },
         queryParamsHandling: 'merge'
       });
     } else if (paymentStatus === 'cancel') {
       this.showMessage('Purchase was cancelled.', 'error');
       this.router.navigate([], {
         relativeTo: this.route,
-        queryParams: { payment: null, session_id: null },
+        queryParams: { payment: null, checkout_id: null },
         queryParamsHandling: 'merge'
       });
     }
