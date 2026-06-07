@@ -9,6 +9,6 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - "/etc/letsencrypt/live/frontend-infernum-original.duckdns.org-0001/fullchain.pem:/etc/letsencrypt/live/frontend-infernum-original.duckdns.org/fullchain.pem"
-      - "/etc/letsencrypt/live/frontend-infernum-original.duckdns.org-0001/privkey.pem:/etc/letsencrypt/live/frontend-infernum-original.duckdns.org/privkey.pem"
+      - "/etc/letsencrypt/live/frontend-infernum-original.duckdns.org-0001:/etc/letsencrypt/live/frontend-infernum-original.duckdns.org:ro"
+      - "/etc/letsencrypt/archive/frontend-infernum-original.duckdns.org-0001:/etc/letsencrypt/archive/frontend-infernum-original.duckdns.org-0001:ro"
     restart: unless-stopped
