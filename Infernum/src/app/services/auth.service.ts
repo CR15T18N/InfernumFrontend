@@ -144,13 +144,18 @@ export class AuthService {
                     }
                 }
 
-                const base = this.apiUrl.replace('/api/v1', '');
+                let base = this.apiUrl.replace('/api/v1', '').replace('api/v1', '');
+                if (base === '') {
+                    base = '/';
+                } else if (base.endsWith('/')) {
+                    base = base.slice(0, -1);
+                }
                 const profile = res.data.profile;
                 let pic = undefined;
                 if (profile?.profile_picture) {
                     pic = profile.profile_picture.startsWith('http')
                         ? profile.profile_picture
-                        : `${base}/${profile.profile_picture}`;
+                        : base === '/' ? `/${profile.profile_picture}` : `${base}/${profile.profile_picture}`;
                 }
                 this.saveSession({ 
                     ...user, 
@@ -181,12 +186,17 @@ export class AuthService {
             );
 
             if (res.status === 'Succesful') {
-                const base = this.apiUrl.replace('/api/v1', '');
+                let base = this.apiUrl.replace('/api/v1', '').replace('api/v1', '');
+                if (base === '') {
+                    base = '/';
+                } else if (base.endsWith('/')) {
+                    base = base.slice(0, -1);
+                }
                 let pic = undefined;
                 if (res.profile.profile_picture) {
                     pic = res.profile.profile_picture.startsWith('http')
                         ? res.profile.profile_picture
-                        : `${base}/${res.profile.profile_picture}`;
+                        : base === '/' ? `/${res.profile.profile_picture}` : `${base}/${res.profile.profile_picture}`;
                 }
                 const token = localStorage.getItem('infernum_token') || undefined;
                 this.saveSession({ ...user, displayName: res.profile.display_name, bio: res.profile.bio, profilePicture: pic }, token);
