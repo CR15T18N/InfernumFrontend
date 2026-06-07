@@ -19,4 +19,3 @@ echo "=== STATUS ==="
 
 docker compose -f setup/docker-compose.production.yml ps
 docker update --restart always Angular
-docker exec Angular apachectl restart
