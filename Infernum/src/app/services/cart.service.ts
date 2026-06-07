@@ -87,4 +87,16 @@ export class CartService {
             return { success: false, message: err.error?.message || 'Checkout error' };
         }
     }
+
+    async verifyPayment(sessionId: string): Promise<{ success: boolean; message: string }> {
+        try {
+            const res = await firstValueFrom(
+                this.http.post<{ status: string; message: string }>(`${this.apiUrl}/payments/verify`, { session_id: sessionId })
+            );
+            return { success: res.status === 'Success', message: res.message };
+        } catch (err: any) {
+            return { success: false, message: err.error?.message || 'Payment verification failed' };
+        }
+    }
 }
+    

@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { GameService } from '../../services/game.service';
+import { CartService } from '../../services/cart.service';
 import { User, Game } from '../../models/user.model';
 import { GlitchTextComponent } from '../shared/glitch-text/glitch-text.component';
 import { CyberButtonComponent } from '../shared/cyber-button/cyber-button.component';
@@ -35,6 +36,7 @@ export class ProfileComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private gameService: GameService,
+    private cartService: CartService,
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
@@ -62,20 +64,34 @@ export class ProfileComponent implements OnInit {
 
     // Handle payment feedback from Stripe redirect
     const paymentStatus = this.route.snapshot.queryParamMap.get('payment');
+    const sessionId = this.route.snapshot.queryParamMap.get('session_id');
     if (paymentStatus === 'success') {
-      this.showMessage('Purchase successful! The game has been added to your library.', 'success');
-      this.loadLibrary();
-      setTimeout(() => this.loadLibrary(), 2500);
+      if (sessionId) {
+        this.cartService.verifyPayment(sessionId).then(res => {
+          if (res.success) {
+            this.showMessage('Purchase successful! The game has been added to your library.', 'success');
+          } else {
+            this.showMessage('Payment verification in progress... Please refresh in a moment.', 'success');
+          }
+          this.loadLibrary();
+        }).catch(err => {
+          console.error('Payment verification error:', err);
+          this.loadLibrary();
+        });
+      } else {
+        this.showMessage('Purchase successful! The game has been added to your library.', 'success');
+        this.loadLibrary();
+      }
       this.router.navigate([], {
         relativeTo: this.route,
-        queryParams: { payment: null },
+        queryParams: { payment: null, session_id: null },
         queryParamsHandling: 'merge'
       });
     } else if (paymentStatus === 'cancel') {
       this.showMessage('Purchase was cancelled.', 'error');
       this.router.navigate([], {
         relativeTo: this.route,
-        queryParams: { payment: null },
+        queryParams: { payment: null, session_id: null },
         queryParamsHandling: 'merge'
       });
     }
