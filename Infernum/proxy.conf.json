@@ -1,6 +1,30 @@
 {
   "/api": {
-    "target": "http://169.254.1.2:8000",
+    "target": "http://Laravel:8000",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/administratorPanel": {
+    "target": "http://Laravel:8000",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/livewire": {
+    "target": "http://Laravel:8000",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/filament": {
+    "target": "http://Laravel:8000",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/storage": {
+    "target": "http://Laravel:8000",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"

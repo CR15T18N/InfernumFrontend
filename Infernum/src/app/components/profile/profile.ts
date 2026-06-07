@@ -64,6 +64,8 @@ export class ProfileComponent implements OnInit {
     const paymentStatus = this.route.snapshot.queryParamMap.get('payment');
     if (paymentStatus === 'success') {
       this.showMessage('Purchase successful! The game has been added to your library.', 'success');
+      this.loadLibrary();
+      setTimeout(() => this.loadLibrary(), 2500);
       this.router.navigate([], {
         relativeTo: this.route,
         queryParams: { payment: null },

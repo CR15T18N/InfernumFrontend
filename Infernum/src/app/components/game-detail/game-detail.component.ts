@@ -24,6 +24,7 @@ export class GameDetailComponent implements OnInit {
   purchaseMessageType: 'success' | 'error' = 'success';
   isLoading = true;
   activeImageIndex = 0;
+  activeTab: 'about' | 'requirements' = 'about';
 
   constructor(
     private route: ActivatedRoute,

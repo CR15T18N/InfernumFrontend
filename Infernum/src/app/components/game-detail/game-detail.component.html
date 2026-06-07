@@ -89,14 +89,51 @@
               </div>
             </div>
           </div>
-          <!-- Description Section -->
-          <div class="description-section">
-            <h2 class="section-title">ABOUT THIS GAME</h2>
-            <div
-              class="description-text"
-              [innerHTML]="game.longDescription || game.description"
-            ></div>
+          <!-- Tabs Navigation -->
+          <div class="tabs-container">
+            <button class="tab-btn" [class.active]="activeTab === 'about'" (click)="activeTab = 'about'">
+              <app-glitch-text text="About this Game"></app-glitch-text>
+            </button>
+            <button class="tab-btn" [class.active]="activeTab === 'requirements'" (click)="activeTab = 'requirements'">
+              <app-glitch-text text="System Requirements"></app-glitch-text>
+            </button>
           </div>
+
+          <!-- Tab Content: About -->
+          @if (activeTab === 'about') {
+            <div class="description-section">
+              <div
+                class="description-text"
+                [innerHTML]="game.longDescription || game.description"
+              ></div>
+            </div>
+          }
+
+          <!-- Tab Content: Requirements -->
+          @if (activeTab === 'requirements') {
+            <div class="requirements-section">
+              @if (game.requirements && game.requirements.length > 0) {
+                <div class="requirements-grid">
+                  @for (req of game.requirements; track req.id) {
+                    <div class="req-box">
+                      <h3 class="req-type-title">{{ req.type === 'minimum' ? 'MINIMUM:' : 'RECOMMENDED:' }}</h3>
+                      <ul class="req-list">
+                        <li><strong>OS:</strong> {{ req.os }}</li>
+                        <li><strong>Processor (CPU):</strong> {{ req.cpu }}</li>
+                        <li><strong>Memory (RAM):</strong> {{ req.ram }}</li>
+                        <li><strong>Graphics (GPU):</strong> {{ req.gpu }}</li>
+                        <li><strong>Storage:</strong> {{ req.storage }}</li>
+                      </ul>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="no-requirements">
+                  <p>No system requirements specified for this game.</p>
+                </div>
+              }
+            </div>
+          }
           <!-- Meta Panel (Now at the end, same width as image) -->
           <div class="panel-meta">
             <div class="meta-row">

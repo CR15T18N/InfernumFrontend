@@ -73,10 +73,10 @@ export class AuthService {
         }
     }
 
-    async login(credentials: LoginCredentials): Promise<{ success: boolean; message: string; user?: User }> {
+    async login(credentials: LoginCredentials): Promise<{ success: boolean; message: string; user?: User; adminRedirectUrl?: string }> {
         try {
             const res = await firstValueFrom(
-                this.http.post<{ status: string, user: BackendUser, token: string }>(`${this.apiUrl}/login`, credentials)
+                this.http.post<{ status: string, user: BackendUser, token: string, admin_redirect_url?: string }>(`${this.apiUrl}/login`, credentials)
             );
 
             if (res.status === 'Successfull') {
@@ -105,7 +105,7 @@ export class AuthService {
                     createdAt: u.created_at ? new Date(u.created_at) : new Date() 
                 };
                 this.saveSession(user, res.token);
-                return { success: true, message: '', user };
+                return { success: true, message: '', user, adminRedirectUrl: res.admin_redirect_url };
             }
             return { success: false, message: 'Invalid credentials' };
         } catch (err: any) {
@@ -146,7 +146,12 @@ export class AuthService {
 
                 const base = this.apiUrl.replace('/api/v1', '');
                 const profile = res.data.profile;
-                const pic = profile?.profile_picture ? `${base}/${profile.profile_picture}` : undefined;
+                let pic = undefined;
+                if (profile?.profile_picture) {
+                    pic = profile.profile_picture.startsWith('http')
+                        ? profile.profile_picture
+                        : `${base}/${profile.profile_picture}`;
+                }
                 this.saveSession({ 
                     ...user, 
                     username: nickname || user.email?.split('@')[0] || 'User',
@@ -177,7 +182,12 @@ export class AuthService {
 
             if (res.status === 'Succesful') {
                 const base = this.apiUrl.replace('/api/v1', '');
-                const pic = res.profile.profile_picture ? `${base}/${res.profile.profile_picture}` : undefined;
+                let pic = undefined;
+                if (res.profile.profile_picture) {
+                    pic = res.profile.profile_picture.startsWith('http')
+                        ? res.profile.profile_picture
+                        : `${base}/${res.profile.profile_picture}`;
+                }
                 const token = localStorage.getItem('infernum_token') || undefined;
                 this.saveSession({ ...user, displayName: res.profile.display_name, bio: res.profile.bio, profilePicture: pic }, token);
                 return { success: true, message: 'Profile updated' };

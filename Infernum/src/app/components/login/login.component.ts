@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CyberButtonComponent } from '../shared/cyber-button/cyber-button.component';
 import { GlitchTextComponent } from '../shared/glitch-text/glitch-text.component';
+import { environment } from '../../../environments/environment';
 
 @Component({
     selector: 'app-login',
@@ -48,8 +49,12 @@ export class LoginComponent implements OnInit {
 
         this.isLoading = false;
 
-        if (result.success) {
-            this.router.navigate(['/home']);
+        if (result.success && result.user) {
+            if (result.user.role === 'admin') {
+                window.location.href = result.adminRedirectUrl || '/administratorPanel';
+            } else {
+                this.router.navigate(['/home']);
+            }
         } else {
             this.errorMessage = result.message;
         }

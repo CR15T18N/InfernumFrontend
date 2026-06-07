@@ -301,3 +301,101 @@
   min-height: 50vh
   font-size: 1.5rem
   color: color-mix(in lch, var(--accent), transparent 40%)
+
+// Tabs Styling
+.tabs-container
+  display: flex
+  gap: 1rem
+  border-bottom: 2px solid color-mix(in lch, var(--accent), transparent 85%)
+  margin-top: 3rem
+  padding-bottom: 2px
+  width: 100%
+
+.tab-btn
+  background: none
+  border: none
+  padding: 0.75rem 1.5rem
+  cursor: pointer
+  color: color-mix(in lch, var(--accent), transparent 40%)
+  font-family: 'Cyber', sans-serif
+  font-size: 1.1rem
+  text-transform: uppercase
+  letter-spacing: 0.05em
+  transition: all 0.3s ease
+  position: relative
+
+  &::after
+    content: ''
+    position: absolute
+    bottom: -2px
+    left: 0
+    right: 0
+    height: 2px
+    background: var(--accent)
+    transform: scaleX(0)
+    transition: transform 0.3s ease
+    box-shadow: 0 0 10px var(--accent)
+
+  &:hover
+    color: var(--accent)
+
+  &.active
+    color: var(--accent)
+    text-shadow: 0 0 8px color-mix(in lch, var(--accent), transparent 50%)
+
+    &::after
+      transform: scaleX(1)
+
+// Requirements Tab Content
+.requirements-section
+  width: 100%
+  margin-top: 1.5rem
+
+.requirements-grid
+  display: grid
+  grid-template-columns: repeat(2, 1fr)
+  gap: 2rem
+
+  @media (max-width: 768px)
+    grid-template-columns: 1fr
+
+.req-box
+  background: color-mix(in lch, var(--accent), transparent 96%)
+  border: 1px solid color-mix(in lch, var(--accent), transparent 80%)
+  border-left: 3px solid var(--accent)
+  padding: 1.5rem
+  border-radius: 2px
+
+.req-type-title
+  font-size: 1rem
+  font-weight: bold
+  color: var(--accent)
+  letter-spacing: 0.05em
+  margin: 0 0 1rem 0
+  border-bottom: 1px solid color-mix(in lch, var(--accent), transparent 85%)
+  padding-bottom: 0.5rem
+
+.req-list
+  list-style: none
+  padding: 0
+  margin: 0
+  display: flex
+  flex-direction: column
+  gap: 0.75rem
+
+  li
+    font-size: 0.9rem
+    color: color-mix(in lch, var(--accent), transparent 15%)
+    line-height: 1.4
+
+    strong
+      color: var(--accent)
+      font-weight: 600
+
+.no-requirements
+  padding: 3rem
+  text-align: center
+  background: color-mix(in lch, var(--accent), transparent 96%)
+  border: 1px dotted color-mix(in lch, var(--accent), transparent 70%)
+  color: color-mix(in lch, var(--accent), transparent 40%)
+  font-style: italic

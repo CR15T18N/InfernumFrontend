@@ -42,8 +42,9 @@ export interface Game {
 
 export interface Requirement {
   id: number;
-  type: 'miminum' | 'recommended';
+  type: 'minimum' | 'recommended';
   os: string;
+  cpu: string;
   ram: string;
   gpu: string;
   storage: string;

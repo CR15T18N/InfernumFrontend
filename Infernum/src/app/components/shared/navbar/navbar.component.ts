@@ -15,8 +15,16 @@ import { CartService } from '../../../services/cart.service';
 export class NavbarComponent implements OnInit {
   isExpanded = signal(false);
   isLoggedIn = false;
+  isAdmin = false;
   isCheckingOut = false;
   checkoutError = '';
+  get adminUrl(): string {
+    const host = window.location.hostname;
+    if (host === 'localhost' || host === '127.0.0.1') {
+      return 'http://localhost/administratorPanel';
+    }
+    return '/administratorPanel';
+  }
 
   constructor(
     private authService: AuthService,
@@ -27,6 +35,7 @@ export class NavbarComponent implements OnInit {
   ngOnInit(): void {
     this.authService.currentUser.subscribe((user) => {
       this.isLoggedIn = !!user;
+      this.isAdmin = user?.role === 'admin';
     });
   }
 
