@@ -1,7 +1,6 @@
 <app-navbar></app-navbar>
 
 <div class="store-container">
-
   <!-- Header -->
   <div class="store-header">
     <div class="store-title">
@@ -13,8 +12,13 @@
     <div class="filters">
       <div class="search-wrapper">
         <span class="search-icon">🔍</span>
-        <input type="text" class="search-input" placeholder="Search games..." [(ngModel)]="searchQuery"
-          (ngModelChange)="applyFilters()">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search games..."
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="applyFilters()"
+        />
       </div>
 
       <select class="genre-select" [(ngModel)]="selectedGenre" (ngModelChange)="applyFilters()">
@@ -25,9 +29,7 @@
       </select>
 
       @if (searchQuery || selectedGenre) {
-        <button class="clear-btn" (click)="clearFilters()">
-          ✕ Clear
-        </button>
+        <button class="clear-btn" (click)="clearFilters()">✕ Clear</button>
       }
     </div>
   </div>
@@ -55,53 +57,61 @@
       @for (game of filteredGames; track game.id) {
         <a [routerLink]="['/game', game.id]" class="game-card">
           <div class="card-cover-wrapper">
-            <img [src]="game.coverUrl" [alt]="game.title" class="card-cover"
-              onerror="this.src='https://placehold.co/200x280/131313/00ffff?text=?'">
-              <!-- Discount badge -->
-              @if (hasDiscount(game)) {
-                <span class="discount-badge">-{{ game.discount }}%</span>
-              }
-              <div class="card-overlay">
-                <span class="view-label">View details →</span>
+            <img
+              [src]="game.coverUrl"
+              [alt]="game.title"
+              class="card-cover"
+              onerror="this.src = 'https://placehold.co/200x280/131313/00ffff?text=?'"
+            />
+            <!-- Discount badge -->
+            @if (hasDiscount(game)) {
+              <span class="discount-badge">-{{ game.discount }}%</span>
+            }
+            <div class="card-overlay">
+              <span class="view-label">View details →</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-genre">{{ game.genre }}</div>
+            <div class="card-title">{{ game.title }}</div>
+            <div class="card-footer">
+              <span class="card-year">{{ game.releaseYear }}</span>
+              <div class="card-price-block">
+                @if (hasDiscount(game)) {
+                  <span class="price-original">{{ formatPrice(game.price) }}</span>
+                }
+                <span class="card-price" [class.discounted]="hasDiscount(game)">{{
+                  finalPrice(game)
+                }}</span>
               </div>
             </div>
-            <div class="card-body">
-              <div class="card-genre">{{ game.genre }}</div>
-              <div class="card-title">{{ game.title }}</div>
-              <div class="card-developer">{{ game.developer }}</div>
-              <div class="card-footer">
-                <span class="card-year">{{ game.releaseYear }}</span>
-                <div class="card-price-block">
-                  @if (hasDiscount(game)) {
-                    <span class="price-original">{{ formatPrice(game.price) }}</span>
-                  }
-                  <span class="card-price" [class.discounted]="hasDiscount(game)">{{ finalPrice(game) }}</span>
-                </div>
-              </div>
-            </div>
-          </a>
-        }
-      </div>
-    }
+          </div>
+        </a>
+      }
+    </div>
+  }
 
-    <!-- Pagination -->
-    @if (!isLoading && pagination && pagination.last_page > 1) {
-      <div class="pagination-controls">
-        <button class="pager-btn" [disabled]="currentPage === 1" (click)="loadPage(currentPage - 1)">
-          ← Previous
-        </button>
-        <div class="page-numbers">
-          @for (p of [].constructor(pagination.last_page); track $index; let i = $index) {
-            <button class="page-num"
-              [class.active]="(i + 1) === currentPage" (click)="loadPage(i + 1)">
+  <!-- Pagination -->
+  @if (!isLoading && pagination && pagination.last_page > 1) {
+    <div class="pagination-controls">
+      <button class="pager-btn" [disabled]="currentPage === 1" (click)="loadPage(currentPage - 1)">
+        ← Previous
+      </button>
+      <div class="page-numbers">
+        @for (p of [].constructor(pagination.last_page); track $index; let i = $index) {
+          <button class="page-num" [class.active]="i + 1 === currentPage" (click)="loadPage(i + 1)">
             {{ i + 1 }}
           </button>
         }
       </div>
-      <button class="pager-btn" [disabled]="currentPage === pagination.last_page" (click)="loadPage(currentPage + 1)">
+      <button
+        class="pager-btn"
+        [disabled]="currentPage === pagination.last_page"
+        (click)="loadPage(currentPage + 1)"
+      >
         Next →
       </button>
     </div>
   }
-
 </div>
+

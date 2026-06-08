@@ -91,10 +91,18 @@
           </div>
           <!-- Tabs Navigation -->
           <div class="tabs-container">
-            <button class="tab-btn" [class.active]="activeTab === 'about'" (click)="activeTab = 'about'">
+            <button
+              class="tab-btn"
+              [class.active]="activeTab === 'about'"
+              (click)="activeTab = 'about'"
+            >
               <app-glitch-text text="About this Game"></app-glitch-text>
             </button>
-            <button class="tab-btn" [class.active]="activeTab === 'requirements'" (click)="activeTab = 'requirements'">
+            <button
+              class="tab-btn"
+              [class.active]="activeTab === 'requirements'"
+              (click)="activeTab = 'requirements'"
+            >
               <app-glitch-text text="System Requirements"></app-glitch-text>
             </button>
           </div>
@@ -116,7 +124,9 @@
                 <div class="requirements-grid">
                   @for (req of game.requirements; track req.id) {
                     <div class="req-box">
-                      <h3 class="req-type-title">{{ req.type === 'minimum' ? 'MINIMUM:' : 'RECOMMENDED:' }}</h3>
+                      <h3 class="req-type-title">
+                        {{ req.type === 'minimum' ? 'MINIMUM:' : 'RECOMMENDED:' }}
+                      </h3>
                       <ul class="req-list">
                         <li><strong>OS:</strong> {{ req.os }}</li>
                         <li><strong>Processor (CPU):</strong> {{ req.cpu }}</li>

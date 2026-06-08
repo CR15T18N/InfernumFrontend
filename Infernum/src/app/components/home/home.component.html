@@ -1,7 +1,6 @@
 <app-navbar></app-navbar>
 
 <div class="home-container">
-
   <!-- Loading -->
   @if (isLoading) {
     <div class="home-loading">
@@ -13,7 +12,10 @@
   @if (!isLoading) {
     @if (currentFeatured) {
       <section class="hero-section">
-        <div class="hero-bg" [style.background-image]="'url(' + currentFeatured.coverUrl + ')'"></div>
+        <div
+          class="hero-bg"
+          [style.background-image]="'url(' + currentFeatured.coverUrl + ')'"
+        ></div>
         <div class="hero-overlay"></div>
         <div class="hero-content">
           <div class="hero-badge">{{ currentFeatured.genre }}</div>
@@ -24,19 +26,24 @@
           <div class="hero-actions">
             <div class="hero-price">
               @if (hasDiscount(currentFeatured)) {
-                <span class="hero-price-original">{{
-                formatPrice(currentFeatured.price) }}</span>
+                <span class="hero-price-original">{{ formatPrice(currentFeatured.price) }}</span>
               }
-              <span [class.hero-price-sale]="hasDiscount(currentFeatured)">{{ discountedPrice(currentFeatured)
+              <span [class.hero-price-sale]="hasDiscount(currentFeatured)">{{
+                discountedPrice(currentFeatured)
               }}</span>
               @if (hasDiscount(currentFeatured)) {
-                <span class="hero-discount-badge">-{{
-                currentFeatured.discount }}%</span>
+                <span class="hero-discount-badge">-{{ currentFeatured.discount }}%</span>
               }
             </div>
-            <button class="btn-buy-hero" [class.owned]="isOwned(currentFeatured)"
-              [disabled]="buyState[currentFeatured.id!] === 'buying' || buyState[currentFeatured.id!] === 'owned'"
-              (click)="buyGame(currentFeatured, $event)">
+            <button
+              class="btn-buy-hero"
+              [class.owned]="isOwned(currentFeatured)"
+              [disabled]="
+                buyState[currentFeatured.id!] === 'buying' ||
+                buyState[currentFeatured.id!] === 'owned'
+              "
+              (click)="buyGame(currentFeatured, $event)"
+            >
               {{ getBuyLabel(currentFeatured) }}
             </button>
             <button class="btn-details" (click)="navigateToGame(currentFeatured.id)">
@@ -50,9 +57,11 @@
         <!-- Dot indicators -->
         <div class="carousel-dots">
           @for (g of featuredGames; track g; let i = $index) {
-            <button class="dot"
-              [class.active]="i === currentFeaturedIndex" (click)="goToFeatured(i)">
-            </button>
+            <button
+              class="dot"
+              [class.active]="i === currentFeaturedIndex"
+              (click)="goToFeatured(i)"
+            ></button>
           }
         </div>
       </section>
@@ -72,20 +81,26 @@
           @for (game of specialOffers; track game) {
             <div class="offer-card" (click)="navigateToGame(game.id)">
               <div class="offer-img-wrap">
-                <img [src]="game.coverUrl" [alt]="game.title" class="offer-img"
-                  onerror="this.src='https://placehold.co/300x180/131313/00ffff?text=?'">
-                  <span class="discount-tag">-{{ game.discount }}%</span>
+                <img
+                  [src]="game.coverUrl"
+                  [alt]="game.title"
+                  class="offer-img"
+                  onerror="this.src = 'https://placehold.co/300x180/131313/00ffff?text=?'"
+                />
+                <span class="discount-tag">-{{ game.discount }}%</span>
+              </div>
+              <div class="offer-body">
+                <div class="offer-title">{{ game.title }}</div>
+                <div class="offer-price-row">
+                  <span class="price-original">{{ formatPrice(game.price) }}</span>
+                  <span class="price-final">{{ discountedPrice(game) }}</span>
                 </div>
-                <div class="offer-body">
-                  <div class="offer-title">{{ game.title }}</div>
-                  <div class="offer-dev">{{ game.developer }}</div>
-                  <div class="offer-price-row">
-                    <span class="price-original">{{ formatPrice(game.price) }}</span>
-                    <span class="price-final">{{ discountedPrice(game) }}</span>
-                  </div>
-                  <button class="btn-buy-card" [class.owned]="isOwned(game)"
-                    [disabled]="buyState[game.id!] === 'buying' || buyState[game.id!] === 'owned'"
-                    (click)="buyGame(game, $event)">
+                <button
+                  class="btn-buy-card"
+                  [class.owned]="isOwned(game)"
+                  [disabled]="buyState[game.id!] === 'buying' || buyState[game.id!] === 'owned'"
+                  (click)="buyGame(game, $event)"
+                >
                   {{ getBuyLabel(game) }}
                 </button>
               </div>
@@ -106,29 +121,36 @@
           @for (game of newGames; track game) {
             <div class="mini-card" (click)="navigateToGame(game.id)">
               <div class="mini-img-wrap">
-                <img [src]="game.coverUrl" [alt]="game.title" class="mini-img"
-                  onerror="this.src='https://placehold.co/160x220/131313/00ffff?text=?'">
-                  @if (hasDiscount(game)) {
-                    <span class="mini-discount-badge">-{{ game.discount }}%</span>
-                  }
-                  <div class="mini-overlay">
-                    <span class="mini-year">{{ game.releaseYear }}</span>
-                  </div>
+                <img
+                  [src]="game.coverUrl"
+                  [alt]="game.title"
+                  class="mini-img"
+                  onerror="this.src = 'https://placehold.co/160x220/131313/00ffff?text=?'"
+                />
+                @if (hasDiscount(game)) {
+                  <span class="mini-discount-badge">-{{ game.discount }}%</span>
+                }
+                <div class="mini-overlay">
+                  <span class="mini-year">{{ game.releaseYear }}</span>
                 </div>
-                <div class="mini-body">
-                  <div class="mini-genre">{{ game.genre }}</div>
-                  <div class="mini-title">{{ game.title }}</div>
-                  <div class="mini-price-block">
-                    @if (hasDiscount(game)) {
-                      <span class="mini-price-original">{{ formatPrice(game.price)
-                      }}</span>
-                    }
-                    <span class="mini-price" [class.mini-price-sale]="hasDiscount(game)">{{
-                    discountedPrice(game) }}</span>
-                  </div>
-                  <button class="btn-buy-mini" [class.owned]="isOwned(game)"
-                    [disabled]="buyState[game.id!] === 'buying' || buyState[game.id!] === 'owned'"
-                    (click)="buyGame(game, $event)">
+              </div>
+              <div class="mini-body">
+                <div class="mini-genre">{{ game.genre }}</div>
+                <div class="mini-title">{{ game.title }}</div>
+                <div class="mini-price-block">
+                  @if (hasDiscount(game)) {
+                    <span class="mini-price-original">{{ formatPrice(game.price) }}</span>
+                  }
+                  <span class="mini-price" [class.mini-price-sale]="hasDiscount(game)">{{
+                    discountedPrice(game)
+                  }}</span>
+                </div>
+                <button
+                  class="btn-buy-mini"
+                  [class.owned]="isOwned(game)"
+                  [disabled]="buyState[game.id!] === 'buying' || buyState[game.id!] === 'owned'"
+                  (click)="buyGame(game, $event)"
+                >
                   {{ getBuyLabel(game) }}
                 </button>
               </div>
@@ -147,30 +169,35 @@
         </div>
         <div class="sellers-list">
           @for (game of topSellers; track game; let i = $index) {
-            <div class="seller-row"
-              (click)="navigateToGame(game.id)">
+            <div class="seller-row" (click)="navigateToGame(game.id)">
               <span class="seller-rank">#{{ i + 1 }}</span>
-              <img [src]="game.coverUrl" [alt]="game.title" class="seller-thumb"
-                onerror="this.src='https://placehold.co/80x80/131313/00ffff?text=?'">
-                <div class="seller-info">
-                  <div class="seller-title">{{ game.title }}</div>
-                  <div class="seller-dev">{{ game.developer }}</div>
+              <img
+                [src]="game.coverUrl"
+                [alt]="game.title"
+                class="seller-thumb"
+                onerror="this.src = 'https://placehold.co/80x80/131313/00ffff?text=?'"
+              />
+              <div class="seller-info">
+                <div class="seller-title">{{ game.title }}</div>
+              </div>
+              <div class="seller-right">
+                <div class="seller-price-block">
+                  @if (hasDiscount(game)) {
+                    <span class="seller-badge">-{{ game.discount }}%</span>
+                  }
+                  @if (hasDiscount(game)) {
+                    <span class="seller-price-orig">{{ formatPrice(game.price) }}</span>
+                  }
+                  <span class="seller-price" [class.seller-price-sale]="hasDiscount(game)">{{
+                    discountedPrice(game)
+                  }}</span>
                 </div>
-                <div class="seller-right">
-                  <div class="seller-price-block">
-                    @if (hasDiscount(game)) {
-                      <span class="seller-badge">-{{ game.discount }}%</span>
-                    }
-                    @if (hasDiscount(game)) {
-                      <span class="seller-price-orig">{{ formatPrice(game.price)
-                      }}</span>
-                    }
-                    <span class="seller-price" [class.seller-price-sale]="hasDiscount(game)">{{
-                    discountedPrice(game) }}</span>
-                  </div>
-                  <button class="btn-buy-mini" [class.owned]="isOwned(game)"
-                    [disabled]="buyState[game.id!] === 'buying' || buyState[game.id!] === 'owned'"
-                    (click)="buyGame(game, $event)">
+                <button
+                  class="btn-buy-mini"
+                  [class.owned]="isOwned(game)"
+                  [disabled]="buyState[game.id!] === 'buying' || buyState[game.id!] === 'owned'"
+                  (click)="buyGame(game, $event)"
+                >
                   {{ getBuyLabel(game) }}
                 </button>
               </div>
