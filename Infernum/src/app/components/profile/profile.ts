@@ -102,6 +102,9 @@ export class ProfileComponent implements OnInit {
         queryParamsHandling: 'merge',
       });
     } else if (paymentStatus === 'cancel') {
+      this.cartService.cancelCart().then(() => {
+        this.cartService.clearLocalCart();
+      });
       this.showMessage('Purchase was cancelled.', 'error');
       this.router.navigate([], {
         relativeTo: this.route,
