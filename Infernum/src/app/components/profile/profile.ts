@@ -30,7 +30,7 @@ export class ProfileComponent implements OnInit {
   editData = {
     displayName: '',
     bio: '',
-    profilePicture: ''
+    profilePicture: '',
   };
 
   constructor(
@@ -39,17 +39,17 @@ export class ProfileComponent implements OnInit {
     private cartService: CartService,
     private router: Router,
     private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef
-  ) { }
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit() {
-    this.authService.currentUser.subscribe(u => {
+    this.authService.currentUser.subscribe((u) => {
       this.currentUser = u;
       if (u) {
         this.editData = {
           displayName: u.displayName || u.username || '',
           bio: u.bio || '',
-          profilePicture: u.profilePicture || ''
+          profilePicture: u.profilePicture || '',
         };
         if (!this.libraryLoaded) {
           this.libraryLoaded = true;
@@ -60,39 +60,53 @@ export class ProfileComponent implements OnInit {
       }
     });
 
-    this.authService.fetchProfile().catch(err => console.error(err));
+    this.authService.fetchProfile().catch((err) => console.error(err));
 
     // Handle payment feedback from Stripe redirect
     const paymentStatus = this.route.snapshot.queryParamMap.get('payment');
     const checkoutId = this.route.snapshot.queryParamMap.get('checkout_id');
     if (paymentStatus === 'success') {
       if (checkoutId) {
-        this.cartService.verifyPayment(checkoutId).then(res => {
-          if (res.success) {
-            this.showMessage('Purchase successful! The game has been added to your library.', 'success');
-          } else {
-            this.showMessage('Payment verification in progress... Please refresh in a moment.', 'success');
-          }
-          this.loadLibrary();
-        }).catch(err => {
-          console.error('Payment verification error:', err);
-          this.loadLibrary();
-        });
+        this.cartService
+          .verifyPayment(checkoutId)
+          .then((res) => {
+            if (res.success) {
+              this.cartService.clearLocalCart();
+              this.showMessage(
+                'Purchase successful! The game has been added to your library.',
+                'success',
+              );
+            } else {
+              this.showMessage(
+                'Payment verification in progress... Please refresh in a moment.',
+                'success',
+              );
+            }
+            this.loadLibrary();
+          })
+          .catch((err) => {
+            console.error('Payment verification error:', err);
+            this.loadLibrary();
+          });
       } else {
-        this.showMessage('Purchase successful! The game has been added to your library.', 'success');
+        this.cartService.clearLocalCart();
+        this.showMessage(
+          'Purchase successful! The game has been added to your library.',
+          'success',
+        );
         this.loadLibrary();
       }
       this.router.navigate([], {
         relativeTo: this.route,
         queryParams: { payment: null, checkout_id: null },
-        queryParamsHandling: 'merge'
+        queryParamsHandling: 'merge',
       });
     } else if (paymentStatus === 'cancel') {
       this.showMessage('Purchase was cancelled.', 'error');
       this.router.navigate([], {
         relativeTo: this.route,
         queryParams: { payment: null, checkout_id: null },
-        queryParamsHandling: 'merge'
+        queryParamsHandling: 'merge',
       });
     }
   }
@@ -131,7 +145,7 @@ export class ProfileComponent implements OnInit {
       this.editData = {
         displayName: this.currentUser.displayName || this.currentUser.username || '',
         bio: this.currentUser.bio || '',
-        profilePicture: this.currentUser.profilePicture || ''
+        profilePicture: this.currentUser.profilePicture || '',
       };
     }
   }
@@ -171,7 +185,7 @@ export class ProfileComponent implements OnInit {
       const result = await this.authService.updateProfile({
         displayName: this.editData.displayName,
         bio: this.editData.bio,
-        profilePicture: this.selectedFile || this.editData.profilePicture
+        profilePicture: this.selectedFile || this.editData.profilePicture,
       });
 
       if (result.success) {
@@ -197,7 +211,7 @@ export class ProfileComponent implements OnInit {
       this.editData = {
         displayName: this.currentUser.displayName || this.currentUser.username || '',
         bio: this.currentUser.bio || '',
-        profilePicture: this.currentUser.profilePicture || ''
+        profilePicture: this.currentUser.profilePicture || '',
       };
     }
   }

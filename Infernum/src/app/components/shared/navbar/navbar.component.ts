@@ -98,15 +98,10 @@ export class NavbarComponent implements OnInit {
       if (lastCartId) {
         const checkoutResult = await this.cartService.checkout(lastCartId);
         if (checkoutResult.success && checkoutResult.url) {
-          this.cartService.clearLocalCart();
           this.cartService.isCartOpen.set(false);
           window.location.href = checkoutResult.url;
-        } else {
-          this.checkoutError = checkoutResult.message || 'Checkout failed. Please try again.';
-        }
-      } else {
-        this.checkoutError = 'Your cart is empty or you already own all games in it.';
-      }
+        } else this.checkoutError = checkoutResult.message || 'Checkout failed. Please try again.';
+      } else this.checkoutError = 'Your cart is empty or you already own all games in it.';
     } catch (error) {
       console.error('Checkout error:', error);
       this.checkoutError = 'An error occurred during checkout.';
