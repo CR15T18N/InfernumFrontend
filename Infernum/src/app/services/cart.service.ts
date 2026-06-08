@@ -109,6 +109,8 @@ export class CartService {
   async cancelCart(): Promise<any> {
     try {
       await firstValueFrom(this.http.delete(`${this.apiUrl}/cart/cancel`));
-    } catch {}
+    } catch (error: any) {
+      console.log('Error', error);
+    }
   }
 }
